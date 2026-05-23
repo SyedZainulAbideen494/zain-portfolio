@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-
+import { useState, useEffect, useRef } from "react";
 /* ─── AUDIO ENGINE ──────────────────────────────────── */
 let audioCtx = null;
 const getAudio = () => {
@@ -79,7 +78,6 @@ const Constellation = () => {
 
     const draw = () => {
       ctx.clearRect(0, 0, W, H);
-      const t = Date.now() * 0.001;
       const mx = mouseRef.current.x, my = mouseRef.current.y;
 
       stars.forEach((s) => {
@@ -198,11 +196,19 @@ const GlowOrbs = () => (
 const Cursor = ({ pos, hover, click }) => {
   const [trail, setTrail] = useState([]);
   const trailRef = useRef([]);
-  useEffect(() => {
-    trailRef.current.push({ ...pos, id: Date.now() });
-    if (trailRef.current.length > 6) trailRef.current.shift();
-    setTrail([...trailRef.current]);
-  }, [pos.x, pos.y]);
+useEffect(() => {
+  trailRef.current.push({
+    x: pos.x,
+    y: pos.y,
+    id: Date.now(),
+  });
+
+  if (trailRef.current.length > 6) {
+    trailRef.current.shift();
+  }
+
+  setTrail([...trailRef.current]);
+}, [pos]);
 
   if (mobile()) return null;
   return (

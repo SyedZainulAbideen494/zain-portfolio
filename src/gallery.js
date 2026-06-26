@@ -845,7 +845,7 @@ export const PhotographyPage = memo(({ visible }) => {
               animation: headerVisible ? "photoHeaderSlide 0.9s 0.25s cubic-bezier(0.16,1,0.3,1) both" : "none",
             }}
           >
-The shots i find amusing
+The shots i find amusing<br/>Yes i'm self obsessed
        </div>
         </div>
 

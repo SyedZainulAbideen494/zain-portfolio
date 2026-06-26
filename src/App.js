@@ -407,7 +407,7 @@ const LineageCard = memo(({ entry, index, onOpen }) => {
           <div>
             <div style={{ fontFamily: "'SF Mono','Fira Code',monospace", fontSize: 8, letterSpacing: "0.28em", color: "rgba(255,255,255,0.22)", textTransform: "uppercase", marginBottom: 4 }}>{entry.generation}</div>
             <div style={{ fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif", fontSize: entry.future ? 13 : 15, fontWeight: 200, color: entry.future ? "rgba(255,255,255,0.25)" : `rgba(255,255,255,${0.4 + (1 - entry.grayscale) * 0.5})`, letterSpacing: "0.02em", fontStyle: entry.future ? "italic" : "normal" }}>{entry.name}</div>
-            {!entry.future && <div style={{ fontFamily: "'SF Mono',monospace", fontSize: 8, color: "rgba(255,255,255,0.18)", marginTop: 2, letterSpacing: "0.12em" }}>{entry.label} · b.{entry.born}</div>}
+            {!entry.future && <div style={{ fontFamily: "'SF Mono',monospace", fontSize: 8, color: "rgba(255,255,255,0.18)", marginTop: 2, letterSpacing: "0.12em" }}>{entry.label} </div>}
           </div>
         </div>
         <div style={{ fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif", fontSize: 11, fontWeight: 200, lineHeight: 1.7, color: entry.future ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.38)", letterSpacing: "0.02em", fontStyle: "italic", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 12 }}>"{entry.quote}"</div>
@@ -456,7 +456,7 @@ const LineageModal = ({ entry, onClose }) => {
         <div style={{ textAlign: "center", marginBottom: 24, fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif", fontSize: "clamp(22px,4vw,30px)", fontWeight: 100, color: entry.future ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.9)", letterSpacing: "-0.02em", fontStyle: entry.future ? "italic" : "normal" }}>{entry.name}</div>
         {!entry.future && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 24, marginBottom: 24 }}>
-            {[["Born", entry.born], ["Location", entry.location], ["Occupation", entry.occupation]].map(([label, val]) => (
+            {[["Location", entry.location], ["Occupation", entry.occupation]].map(([label, val]) => (
               <div key={label}>
                 <div style={{ fontFamily: "'SF Mono',monospace", fontSize: 8, letterSpacing: "0.26em", color: "rgba(255,255,255,0.18)", textTransform: "uppercase", marginBottom: 4 }}>{label}</div>
                 <div style={{ fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif", fontSize: 13, fontWeight: 200, color: "rgba(255,255,255,0.62)", letterSpacing: "0.02em" }}>{val}</div>
@@ -737,14 +737,14 @@ const Dock = memo(({ active, setActive }) => (
       <DockBtn label="Instagram"   active={active === "instagram"}  onClick={() => { soundSwitch(); setActive("instagram"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="6" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" /><circle cx="12" cy="12" r="4.5" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" /><circle cx="17.2" cy="6.8" r="0.85" fill="rgba(255,255,255,0.75)" /></svg>
       </DockBtn>
-      <DockBtn label="Gallery"     active={active === "gallery"}    onClick={() => { soundSwitch(); setActive("gallery"); }}>
+    {/* <DockBtn label="Gallery"     active={active === "gallery"}    onClick={() => { soundSwitch(); setActive("gallery"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <rect x="2" y="3" width="9" height="9"  rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
           <rect x="13" y="3" width="9" height="6"  rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
           <rect x="2"  y="14" width="9" height="7" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
           <rect x="13" y="11" width="9" height="10" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
         </svg>
-      </DockBtn>
+      </DockBtn>*/}  
       <DockBtn label="Home"        active={active === "home"}       onClick={() => { soundSwitch(); setActive("home"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3l9 7.5V21H15v-5h-6v5H3z" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" strokeLinejoin="round" /></svg>
       </DockBtn>

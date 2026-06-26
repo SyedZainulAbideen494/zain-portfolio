@@ -1,13 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import img1 from "./gallery/1000067112.JPG";
-import img2 from "./gallery/1000106524.JPG";
-import img3 from "./gallery/1000111846.JPG";
-import img4 from "./gallery/1000111857.JPG";
-import img5 from "./gallery/cpm35 2026-03-22 143346C2467C7BE316.JPG";
-import img6 from "./gallery/cpm35 2026-03-24 100412B20505A15C86.JPG";
-import img7 from "./gallery/IMG_2184.JPG";
-import img8 from "./gallery/IMG_2762.JPG";
-import img9 from "./gallery/IMG_4190.jpg";
+import img1 from "./gallery/IMG_2183.JPG";
+import img2 from "./gallery/1000111857 2.JPG";
+import img3 from "./gallery/PHOTO-2026-06-05-18-58-52.jpg";
+import img4 from "./gallery/124q.JPG";
+
 /* ─── AUDIO ENGINE ──────────────────────────────────── */
 let audioCtx = null;
 const getAudio = () => {
@@ -246,197 +242,604 @@ const SpotifyPage = ({ visible }) => {
   </>);
 };
 
-/* ─── GALLERY PAGE ───────────────────────────────────── */
-const GALLERY_IMAGES = [
-  { id: 1, src: img1, filename: "1000067112.JPG", date: "2026.06.25", aspect: 1.48 },
-  { id: 2, src: img2, filename: "1000106524.JPG", date: "2026.06.25", aspect: 1.32 },
-  { id: 4, src: img4, filename: "1000111857.JPG", date: "2026.06.25", aspect: 1.55 },
-  { id: 5, src: img5, filename: "cpm35 A", date: "2026.06.25", aspect: 0.68 },
-  { id: 6, src: img6, filename: "cpm35 B", date: "2026.06.25", aspect: 0.75 },
-  { id: 7, src: img7, filename: "IMG_2184.JPG", date: "2026.06.25", aspect: 1.25 },
-  { id: 8, src: img8, filename: "IMG_2762.JPG", date: "2026.06.25", aspect: 1.4 },
-  { id: 9, src: img9, filename: "IMG_4190.jpg", date: "2026.06.25", aspect: 1.6 },
+/* ─── LINEAGE DATA ───────────────────────────────────────────────────────────
+   Replace src with your actual image imports.
+   portrait: null → shows initials fallback
+   color: CSS filter applied to the portrait
+   future: true → renders the "unwritten" glowing card
+   ─────────────────────────────────────────────────────────────────────────── */
+export const LINEAGE = [
+  {
+    id: 1,
+    generation: "Generation I",
+    label: "Great Grandfather",
+    name: "Syed Basheer",
+    born: "c. 1880",
+    location: "Unknown",
+    occupation: "Chemical factory owner",
+    quote: "Some roots run deeper than memory can reach.",
+    portrait: img1,            // replace with: import portrait1 from "./lineage/gen1.jpg"
+    grayscale: 1,
+    sepia: 0.6,
+    grain: true,
+  },
+  {
+    id: 2,
+    generation: "Generation II",
+    label: "Grandfather",
+    name: "Syed Abdul Rahman",
+    born: "c. 1910",
+    location: "Unknown",
+    occupation: "M.D At Aramco",
+    quote: "He built something where there was nothing.",
+    portrait: img2,
+    grayscale: 0.9,
+    sepia: 0.3,
+    grain: true,
+  },
+  {
+    id: 3,
+    generation: "Generation III",
+    label: "Father",
+    name: "Syed Kaleemullah",
+    born: "c. 1940",
+    location: "Unknown",
+    occupation: "Businesses",
+    quote: "Every generation carries the weight of the last.",
+    portrait: img3,
+    grayscale: 0.7,
+    sepia: 0.1,
+    grain: false,
+  },
+  {
+    id: 4,
+    generation: "Generation IV",
+    label: "Me",
+    name: "Syed Zain-ul Abideen",
+    born: "c. 1965",
+    location: "Unknown",
+    occupation: "Pilot",
+    quote: "He gave me everything he never had.",
+    portrait: img4,
+    grayscale: 0.3,
+    sepia: 0,
+    grain: false,
+  },
 ];
 
-const GalleryCard = ({ image, index, onOpen, memoryMode, appeared }) => {
+/* ─── LINEAGE COMPONENTS ──────────────────────────────────────────────────── */
+
+
+
+/* ── Portrait circle ── */
+const Portrait = ({ entry, size = 80, zoom = false }) => {
+  const filter = [
+    entry.grayscale > 0 ? `grayscale(${entry.grayscale})` : "",
+    entry.sepia      > 0 ? `sepia(${entry.sepia})`         : "",
+  ].filter(Boolean).join(" ") || "none";
+
+  const initials = entry.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: "50%",
+      overflow: "hidden", flexShrink: 0, position: "relative",
+      border: entry.future
+        ? "1px solid rgba(255,255,255,0.25)"
+        : entry.isSelf
+          ? "1.5px solid rgba(255,255,255,0.5)"
+          : "1px solid rgba(255,255,255,0.15)",
+      boxShadow: entry.isSelf
+        ? "0 0 24px rgba(255,255,255,0.12), inset 0 0 12px rgba(255,255,255,0.04)"
+        : "0 0 12px rgba(0,0,0,0.6)",
+      background: entry.future
+        ? "transparent"
+        : "rgba(20,20,20,0.9)",
+      transition: "transform 0.6s cubic-bezier(0.16,1,0.3,1)",
+      transform: zoom ? "scale(1.06)" : "scale(1)",
+    }}>
+      {entry.future ? (
+        /* glowing outline only */
+        <div style={{
+          width: "100%", height: "100%", display: "flex",
+          alignItems: "center", justifyContent: "center",
+          animation: "lineageGlow 3s ease-in-out infinite",
+        }}>
+          <div style={{
+            width: "40%", height: "40%", borderRadius: "50%",
+            border: "1px solid rgba(255,255,255,0.2)",
+            animation: "lineagePulse 2s ease-in-out infinite",
+          }} />
+        </div>
+      ) : entry.portrait ? (
+        <img
+          src={entry.portrait}
+          alt={entry.name}
+          style={{
+            width: "100%", height: "100%", objectFit: "cover",
+            filter, display: "block",
+          }}
+        />
+      ) : (
+        /* initials fallback */
+        <div style={{
+          width: "100%", height: "100%",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+          fontSize: size * 0.28, fontWeight: 100,
+          letterSpacing: "0.08em",
+          color: `rgba(255,255,255,${0.15 + (1 - entry.grayscale) * 0.45})`,
+          filter,
+        }}>
+          {entry.future ? "" : initials}
+        </div>
+      )}
+
+      {/* film grain overlay */}
+      {entry.grain && (
+        <svg style={{
+          position: "absolute", inset: 0, width: "100%", height: "100%",
+          opacity: 0.18, pointerEvents: "none", mixBlendMode: "overlay",
+        }}>
+          <filter id={`grain-${entry.id}`}>
+            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+          </filter>
+          <rect width="100%" height="100%" filter={`url(#grain-${entry.id})`} />
+        </svg>
+      )}
+    </div>
+  );
+};
+
+/* ── Single timeline card ── */
+const LineageCard = ({ entry, index, onOpen }) => {
+  const [visible, setVisible] = useState(false);
   const [hov, setHov] = useState(false);
-  const height = Math.round(220 * image.aspect);
+  const [cursorRel, setCursorRel] = useState({ x: 0.5, y: 0.5 });
+  const cardRef = useRef(null);
+  const isLeft = index % 2 === 0;
+
+  /* Intersection observer for reveal */
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.15 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCursorRel({
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height,
+    });
+  };
+
+  const glowX = cursorRel.x * 100;
+  const glowY = cursorRel.y * 100;
 
   return (
     <div
+      ref={cardRef}
+      style={{
+        /* positioning: alternate sides */
+        gridColumn: isLeft ? 1 : 3,
+        justifySelf: isLeft ? "end" : "start",
+        width: "clamp(220px, 32vw, 340px)",
+        opacity: visible ? 1 : 0,
+        filter: visible ? "blur(0px)" : "blur(20px)",
+        transform: visible
+          ? "translateY(0) scale(1)"
+          : `translateY(80px) scale(0.97)`,
+        transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${index * 0.12}s,
+                     filter 0.9s cubic-bezier(0.16,1,0.3,1) ${index * 0.12}s,
+                     transform 0.9s cubic-bezier(0.34,1.56,0.64,1) ${index * 0.12}s`,
+        cursor: "pointer",
+        position: "relative",
+      }}
       onMouseEnter={() => { setHov(true); soundHover(); }}
       onMouseLeave={() => setHov(false)}
-      onClick={() => { onOpen(image); soundImageOpen(); }}
-      style={{
-        breakInside: "avoid",
-        marginBottom: 14,
-        borderRadius: 18,
-        overflow: "hidden",
-        position: "relative",
-        cursor: "pointer",
-        opacity: appeared ? 1 : 0,
-        transform: appeared ? "translateY(0) scale(1)" : "translateY(24px) scale(0.97)",
-        transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${index * 0.06}s, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${index * 0.06}s`,
-        filter: memoryMode ? "grayscale(1)" : "none",
-        boxShadow: hov
-          ? "0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.12)"
-          : "0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)",
-        background: "rgba(15,15,15,0.8)",
-      }}>
-
-      {/* Image */}
-      <img
-        src={image.src}
-        alt={image.filename}
-        loading="lazy"
-        style={{
-          width: "100%",
-          height,
-          objectFit: "cover",
-          display: "block",
-          transform: hov ? "scale(1.04)" : "scale(1)",
-          transition: "transform 0.6s cubic-bezier(0.16,1,0.3,1)",
-        }}
-      />
-
-      {/* Bottom fade with meta */}
+      onMouseMove={handleMouseMove}
+      onClick={() => { onOpen(entry); soundClick(); }}
+    >
+      {/* Glass card */}
       <div style={{
-        position: "absolute",
-        bottom: 0, left: 0, right: 0,
-        background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%)",
-        padding: "32px 14px 12px",
-        opacity: hov ? 1 : 0,
-        transform: hov ? "translateY(0)" : "translateY(6px)",
-        transition: "opacity 0.35s ease, transform 0.35s ease",
+        background: entry.future
+          ? "transparent"
+          : "rgba(255,255,255,0.03)",
+        backdropFilter: "blur(40px)",
+        WebkitBackdropFilter: "blur(40px)",
+        border: entry.future
+          ? "1px dashed rgba(255,255,255,0.12)"
+          : `1px solid rgba(255,255,255,${hov ? 0.18 : 0.08})`,
+        borderRadius: 20,
+        padding: "22px 22px 18px",
+        position: "relative",
+        overflow: "hidden",
+        transform: hov ? "translateY(-6px)" : "translateY(0)",
+        transition: "transform 0.5s cubic-bezier(0.34,1.56,0.64,1), border-color 0.3s ease, box-shadow 0.4s ease",
+        boxShadow: hov
+          ? "0 28px 70px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.12)"
+          : "0 8px 32px rgba(0,0,0,0.5)",
       }}>
-        <div style={{ fontFamily: "'SF Mono', monospace", fontSize: 9, letterSpacing: "0.18em", color: "rgba(255,255,255,0.55)" }}>{image.filename}</div>
-        <div style={{ fontFamily: "'SF Mono', monospace", fontSize: 8, letterSpacing: "0.14em", color: "rgba(255,255,255,0.28)", marginTop: 3 }}>{image.date}</div>
+        {/* Cursor-following glass reflection */}
+        <div style={{
+          position: "absolute", inset: 0, borderRadius: 20, pointerEvents: "none",
+          background: `radial-gradient(circle at ${glowX}% ${glowY}%, rgba(255,255,255,0.07) 0%, transparent 60%)`,
+          opacity: hov ? 1 : 0,
+          transition: "opacity 0.3s ease",
+        }} />
+
+        {/* Top row: portrait + generation label */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+          <Portrait entry={entry} size={54} zoom={hov} />
+          <div>
+            <div style={{
+              fontFamily: "'SF Mono','Fira Code',monospace",
+              fontSize: 8, letterSpacing: "0.28em",
+              color: "rgba(255,255,255,0.22)",
+              textTransform: "uppercase", marginBottom: 4,
+            }}>{entry.generation}</div>
+            <div style={{
+              fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+              fontSize: entry.future ? 13 : 15, fontWeight: 200,
+              color: entry.future
+                ? "rgba(255,255,255,0.25)"
+                : `rgba(255,255,255,${0.4 + (1 - entry.grayscale) * 0.5})`,
+              letterSpacing: "0.02em",
+              fontStyle: entry.future ? "italic" : "normal",
+            }}>
+              {entry.name}
+            </div>
+            {!entry.future && (
+              <div style={{
+                fontFamily: "'SF Mono',monospace", fontSize: 8,
+                color: "rgba(255,255,255,0.18)", marginTop: 2, letterSpacing: "0.12em",
+              }}>{entry.label} · b.{entry.born}</div>
+            )}
+          </div>
+        </div>
+
+        {/* Quote */}
+        <div style={{
+          fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+          fontSize: 11, fontWeight: 200, lineHeight: 1.7,
+          color: entry.future ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.38)",
+          letterSpacing: "0.02em",
+          fontStyle: "italic",
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+          paddingTop: 12,
+        }}>
+          "{entry.quote}"
+        </div>
+
+        {/* Self indicator */}
+        {entry.isSelf && (
+          <div style={{
+            position: "absolute", top: 14, right: 14,
+            width: 6, height: 6, borderRadius: "50%",
+            background: "rgba(255,255,255,0.6)",
+            boxShadow: "0 0 8px rgba(255,255,255,0.4)",
+            animation: "lineagePulse 2.5s ease-in-out infinite",
+          }} />
+        )}
       </div>
 
-      {/* Hover shine */}
+      {/* Connector arm to center line */}
       <div style={{
-        position: "absolute", inset: 0,
-        background: "linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 55%)",
-        opacity: hov ? 1 : 0,
-        transition: "opacity 0.3s ease",
+        position: "absolute",
+        top: "50%",
+        [isLeft ? "right" : "left"]: -30,
+        width: 30, height: 1,
+        background: `linear-gradient(${isLeft ? "to left" : "to right"}, transparent, rgba(255,255,255,${hov ? 0.3 : 0.1}))`,
+        transition: "background 0.3s ease",
         pointerEvents: "none",
       }} />
     </div>
   );
 };
 
-const GalleryViewer = ({ image, images, onClose, onNext, onPrev, memoryMode }) => {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setTimeout(() => setMounted(true), 50); }, []);
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight") onNext();
-      if (e.key === "ArrowLeft") onPrev();
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose, onNext, onPrev]);
+/* ── Timeline node dot ── */
+const TimelineNode = ({ entry, index, activeNode }) => {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef(null);
 
-  const idx = images.findIndex(img => img.id === image.id);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.5 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const isActive = activeNode === entry.id;
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.94)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)", opacity: mounted ? 1 : 0, transition: "opacity 0.5s ease" }} />
-
-      {/* Prev / Next */}
-      {["←", "→"].map((arrow, i) => (
-        <button key={arrow} onClick={i === 0 ? onPrev : onNext} style={{
-          position: "fixed", top: "50%", [i === 0 ? "left" : "right"]: 28,
-          transform: "translateY(-50%)",
-          background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-          borderRadius: "50%", width: 44, height: 44, color: "rgba(255,255,255,0.5)",
-          fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-          zIndex: 202, backdropFilter: "blur(12px)", transition: "all 0.2s ease",
-          opacity: mounted ? 1 : 0,
-        }}>{arrow}</button>
-      ))}
-
-      {/* Image */}
+    <div
+      ref={ref}
+      style={{
+        gridColumn: 2,
+        justifySelf: "center",
+        display: "flex", flexDirection: "column", alignItems: "center",
+        gap: 0, position: "relative", zIndex: 2,
+        opacity: visible ? 1 : 0,
+        transition: `opacity 0.6s ease ${index * 0.12 + 0.2}s`,
+      }}
+    >
+      {/* Node dot */}
       <div style={{
-        position: "relative", zIndex: 201,
-        maxWidth: "88vw", maxHeight: "82vh",
-        opacity: mounted ? 1 : 0,
-        filter: `grayscale(${memoryMode ? 1 : 0})`,
-        transform: mounted ? "scale(1) translateY(0)" : "scale(0.92) translateY(30px)",
-        transition: "opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.34,1.56,0.64,1), filter 0.5s ease",
-        borderRadius: 20, overflow: "hidden",
-        boxShadow: "0 40px 120px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.08)",
-      }}>
-        <img src={image.src} alt={image.filename} style={{ display: "block", maxWidth: "88vw", maxHeight: "82vh", objectFit: "contain" }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 40%)", pointerEvents: "none" }} />
-      </div>
-
-      {/* Meta bottom left */}
-      <div style={{ position: "fixed", bottom: 40, left: 40, zIndex: 202, fontFamily: "'SF Mono', monospace", fontSize: 10, letterSpacing: "0.2em", color: "rgba(255,255,255,0.28)", opacity: mounted ? 1 : 0, transition: "opacity 0.8s 0.3s ease" }}>
-        {memoryMode ? "some moments deserve silence." : image.filename}
-      </div>
-
-      {/* Date bottom right */}
-      <div style={{ position: "fixed", bottom: 40, right: 40, zIndex: 202, fontFamily: "'SF Mono', monospace", fontSize: 10, letterSpacing: "0.2em", color: "rgba(255,255,255,0.28)", opacity: mounted ? 1 : 0, transition: "opacity 0.8s 0.3s ease" }}>{image.date}</div>
-
-      {/* Dot progress */}
-      <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", zIndex: 202, display: "flex", gap: 6 }}>
-        {images.map((img, i) => (
-          <div key={img.id} style={{ width: i === idx ? 22 : 5, height: 2, borderRadius: 1, background: i === idx ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.18)", transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)" }} />
-        ))}
-      </div>
-
-      {/* ESC */}
-      <div onClick={onClose} style={{ position: "fixed", top: 26, right: 32, zIndex: 202, fontFamily: "'SF Mono', monospace", fontSize: 9, letterSpacing: "0.26em", color: "rgba(255,255,255,0.2)", cursor: "pointer", opacity: mounted ? 1 : 0, transition: "opacity 0.8s 0.5s ease" }}>ESC</div>
+        width: entry.isSelf ? 14 : entry.future ? 10 : 8,
+        height: entry.isSelf ? 14 : entry.future ? 10 : 8,
+        borderRadius: "50%",
+        background: entry.future
+          ? "transparent"
+          : entry.isSelf
+            ? "rgba(255,255,255,0.9)"
+            : "rgba(255,255,255,0.4)",
+        border: entry.future ? "1px solid rgba(255,255,255,0.2)" : "none",
+        boxShadow: isActive || entry.isSelf
+          ? "0 0 20px rgba(255,255,255,0.5), 0 0 40px rgba(255,255,255,0.15)"
+          : "0 0 6px rgba(255,255,255,0.15)",
+        transition: "box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1)",
+        transform: isActive ? "scale(1.5)" : "scale(1)",
+        animation: entry.isSelf ? "lineagePulse 3s ease-in-out infinite" : "none",
+      }} />
     </div>
   );
 };
 
-const GalleryPage = ({ visible }) => {
-  const [appeared, setAppeared] = useState([]);
-  const [openImage, setOpenImage] = useState(null);
-  const [memoryMode, setMemoryMode] = useState(false);
-  const [clickCount, setClickCount] = useState(0);
-  const [showHeader, setShowHeader] = useState(false);
-  const clickTimerRef = useRef(null);
-  const scrollRef = useRef(null);
+/* ── Expanded modal ── */
+const LineageModal = ({ entry, onClose }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setTimeout(() => setMounted(true), 30);
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 300,
+      display: "flex", alignItems: "center", justifyContent: "center",
+    }}>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        style={{
+          position: "absolute", inset: 0,
+          background: "rgba(0,0,0,0.92)",
+          backdropFilter: "blur(50px)", WebkitBackdropFilter: "blur(50px)",
+          opacity: mounted ? 1 : 0, transition: "opacity 0.5s ease",
+        }}
+      />
+
+      {/* Card */}
+      <div style={{
+        position: "relative", zIndex: 301,
+        width: "min(500px, 90vw)",
+        background: entry.future ? "transparent" : "rgba(255,255,255,0.035)",
+        border: entry.future
+          ? "1px dashed rgba(255,255,255,0.15)"
+          : "1px solid rgba(255,255,255,0.12)",
+        borderRadius: 28,
+        padding: "36px",
+        backdropFilter: "blur(60px)", WebkitBackdropFilter: "blur(60px)",
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? "scale(1) translateY(0)" : "scale(0.9) translateY(40px)",
+        transition: "opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.34,1.56,0.64,1)",
+        boxShadow: "0 60px 160px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.06)",
+        overflow: "hidden",
+      }}>
+        {/* Subtle top highlight */}
+        <div style={{
+          position: "absolute", top: 0, left: "20%", right: "20%", height: 1,
+          background: "linear-gradient(to right, transparent, rgba(255,255,255,0.12), transparent)",
+          pointerEvents: "none",
+        }} />
+
+        {/* Portrait */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 28 }}>
+          <Portrait entry={entry} size={100} />
+        </div>
+
+        {/* Generation label */}
+        <div style={{
+          textAlign: "center", marginBottom: 6,
+          fontFamily: "'SF Mono',monospace", fontSize: 9,
+          letterSpacing: "0.3em", color: "rgba(255,255,255,0.2)",
+          textTransform: "uppercase",
+        }}>{entry.generation} · {entry.label}</div>
+
+        {/* Name */}
+        <div style={{
+          textAlign: "center", marginBottom: 24,
+          fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+          fontSize: "clamp(22px,4vw,30px)", fontWeight: 100,
+          color: entry.future ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.9)",
+          letterSpacing: "-0.02em",
+          fontStyle: entry.future ? "italic" : "normal",
+        }}>{entry.name}</div>
+
+        {!entry.future && (
+          /* Metadata grid */
+          <div style={{
+            display: "grid", gridTemplateColumns: "1fr 1fr",
+            gap: 16, borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 24,
+            marginBottom: 24,
+          }}>
+            {[
+              ["Born", entry.born],
+              ["Location", entry.location],
+              ["Occupation", entry.occupation],
+            ].map(([label, val]) => (
+              <div key={label}>
+                <div style={{
+                  fontFamily: "'SF Mono',monospace", fontSize: 8,
+                  letterSpacing: "0.26em", color: "rgba(255,255,255,0.18)",
+                  textTransform: "uppercase", marginBottom: 4,
+                }}>{label}</div>
+                <div style={{
+                  fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+                  fontSize: 13, fontWeight: 200,
+                  color: "rgba(255,255,255,0.62)", letterSpacing: "0.02em",
+                }}>{val}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Quote */}
+        <div style={{
+          borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 20,
+          fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+          fontSize: 13, fontWeight: 200, lineHeight: 1.8,
+          color: "rgba(255,255,255,0.35)", letterSpacing: "0.02em",
+          fontStyle: "italic", textAlign: "center",
+        }}>"{entry.quote}"</div>
+
+        {/* ESC hint */}
+        <div
+          onClick={onClose}
+          style={{
+            marginTop: 28, textAlign: "center", cursor: "pointer",
+            fontFamily: "'SF Mono',monospace", fontSize: 8,
+            letterSpacing: "0.28em", color: "rgba(255,255,255,0.15)",
+            textTransform: "uppercase",
+          }}
+        >ESC to close</div>
+      </div>
+    </div>
+  );
+};
+
+/* ── Cinematic intro ── */
+const LineageIntro = ({ onDone }) => {
+  const [phase, setPhase] = useState(0);
+  // phase 0: line drawing, 1: title, 2: subtitle, 3: fade out
 
   useEffect(() => {
-    if (!visible) return;
-    setAppeared([]);
-    setShowHeader(false);
-    soundGalleryOpen();
-    setTimeout(() => setShowHeader(true), 400);
-    GALLERY_IMAGES.forEach((img, i) =>
-      setTimeout(() => setAppeared(prev => [...prev, img.id]), 500 + i * 90)
-    );
+    const t1 = setTimeout(() => setPhase(1), 1400);
+    const t2 = setTimeout(() => setPhase(2), 2600);
+    const t3 = setTimeout(() => setPhase(3), 4200);
+    const t4 = setTimeout(() => onDone(), 5200);
+    return () => [t1, t2, t3, t4].forEach(clearTimeout);
+  }, [onDone]);
+
+  return (
+    <div style={{
+      position: "absolute", inset: 0, zIndex: 50,
+      background: "#000",
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      opacity: phase === 3 ? 0 : 1,
+      transition: "opacity 1s ease",
+      pointerEvents: phase === 3 ? "none" : "auto",
+    }}>
+      {/* Drawing line */}
+      <div style={{
+        width: 1,
+        height: phase >= 0 ? "clamp(60px,8vh,100px)" : 0,
+        background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.5))",
+        transition: "height 1.2s cubic-bezier(0.16,1,0.3,1)",
+        marginBottom: 32,
+      }} />
+
+      {/* Title */}
+      <div style={{
+        fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+        fontSize: "clamp(48px,10vw,100px)", fontWeight: 100,
+        letterSpacing: "0.3em", color: "rgba(255,255,255,0.95)",
+        opacity: phase >= 1 ? 1 : 0,
+        transform: phase >= 1 ? "translateY(0)" : "translateY(20px)",
+        transition: "opacity 1s ease, transform 1s cubic-bezier(0.16,1,0.3,1)",
+        textAlign: "center",
+      }}>LINEAGE</div>
+
+      {/* Subtitle */}
+      <div style={{
+        marginTop: 20,
+        fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+        fontSize: "clamp(12px,1.4vw,15px)", fontWeight: 200,
+        letterSpacing: "0.18em", color: "rgba(255,255,255,0.3)",
+        opacity: phase >= 2 ? 1 : 0,
+        transform: phase >= 2 ? "translateY(0)" : "translateY(10px)",
+        transition: "opacity 1s ease, transform 1s cubic-bezier(0.16,1,0.3,1)",
+        textAlign: "center",
+      }}>The story began long before me.</div>
+    </div>
+  );
+};
+
+/* ── Main GalleryPage replacement ── */
+export const GalleryPage = ({ visible }) => {
+  const [showIntro, setShowIntro] = useState(true);
+  const [modal, setModal] = useState(null);
+  const [activeNode, setActiveNode] = useState(null);
+  const [lineProgress, setLineProgress] = useState(0);
+  const scrollRef = useRef(null);
+  const lineRef = useRef(null);
+  const hasRun = useRef(false);
+
+  /* Re-trigger intro every time page becomes visible */
+  useEffect(() => {
+    if (visible && !hasRun.current) {
+      hasRun.current = true;
+      setShowIntro(true);
+      setLineProgress(0);
+    }
+    if (!visible) hasRun.current = false;
   }, [visible]);
 
-  const handleImageOpen = (image) => {
-    setOpenImage(image);
-    soundImageOpen();
-    const newCount = clickCount + 1;
-    setClickCount(newCount);
-    if (newCount >= 5) { setMemoryMode(true); soundMemoryMode(); setClickCount(0); }
-    clearTimeout(clickTimerRef.current);
-    clickTimerRef.current = setTimeout(() => setClickCount(0), 3000);
-  };
+  /* Track scroll to animate line and active node */
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    const progress = scrollTop / (scrollHeight - clientHeight);
+    setLineProgress(Math.min(progress, 1));
 
-  const handleClose = () => setOpenImage(null);
-  const handleNext = () => { const idx = GALLERY_IMAGES.findIndex(i => i.id === openImage.id); setOpenImage(GALLERY_IMAGES[(idx + 1) % GALLERY_IMAGES.length]); };
-  const handlePrev = () => { const idx = GALLERY_IMAGES.findIndex(i => i.id === openImage.id); setOpenImage(GALLERY_IMAGES[(idx - 1 + GALLERY_IMAGES.length) % GALLERY_IMAGES.length]); };
-
-  // Split into 3 masonry columns
-  const cols = [[], [], []];
-  GALLERY_IMAGES.forEach((img, i) => cols[i % 3].push(img));
+    /* Find which node is near center */
+    const nodes = el.querySelectorAll("[data-nodeid]");
+    const center = el.getBoundingClientRect().top + clientHeight / 2;
+    let closest = null, minDist = Infinity;
+    nodes.forEach((node) => {
+      const rect = node.getBoundingClientRect();
+      const dist = Math.abs(rect.top + rect.height / 2 - center);
+      if (dist < minDist) { minDist = dist; closest = node.dataset.nodeid; }
+    });
+    if (closest) setActiveNode(Number(closest));
+  }, []);
 
   return (
     <>
       <style>{`
-        @keyframes galleryFadeDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .gallery-scroll::-webkit-scrollbar { width: 0; }
-        .gallery-scroll { scrollbar-width: none; }
+        @keyframes lineagePulse {
+          0%,100% { opacity: 0.4; transform: scale(1); }
+          50%      { opacity: 1;   transform: scale(1.2); }
+        }
+        @keyframes lineageGlow {
+          0%,100% { opacity: 0.15; }
+          50%      { opacity: 0.4; }
+        }
+        @keyframes lineageDraw {
+          from { stroke-dashoffset: 1; }
+          to   { stroke-dashoffset: 0; }
+        }
+        @keyframes particleFloat {
+          0%   { transform: translateY(0)  scale(1);   opacity: 0.6; }
+          100% { transform: translateY(-40px) scale(0.6); opacity: 0; }
+        }
+        .lineage-scroll::-webkit-scrollbar { width: 0; }
+        .lineage-scroll { scrollbar-width: none; }
       `}</style>
 
       <div style={{
@@ -444,94 +847,160 @@ const GalleryPage = ({ visible }) => {
         opacity: visible ? 1 : 0,
         transition: "opacity 0.5s ease",
         pointerEvents: visible ? "auto" : "none",
-        display: "flex",
-        flexDirection: "column",
+        display: "flex", flexDirection: "column",
       }}>
+        {/* Cinematic intro */}
+        {showIntro && <LineageIntro onDone={() => setShowIntro(false)} />}
 
-        {/* ── Header ── */}
-        <div style={{
-          flexShrink: 0,
-          padding: "28px 32px 18px",
-          display: "flex",
-          alignItems: "baseline",
-          justifyContent: "space-between",
-          borderBottom: "1px solid rgba(255,255,255,0.05)",
-          opacity: showHeader ? 1 : 0,
-          transform: showHeader ? "translateY(0)" : "translateY(-8px)",
-          transition: "opacity 0.6s ease, transform 0.6s cubic-bezier(0.16,1,0.3,1)",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            {memoryMode
-              ? <span style={{ fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif", fontSize: 13, fontWeight: 200, letterSpacing: "0.28em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>memory mode</span>
-              : <span style={{ fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif", fontSize: 13, fontWeight: 200, letterSpacing: "0.38em", color: "rgba(255,255,255,0.22)", textTransform: "uppercase" }}>gallery</span>
-            }
-            <span style={{ fontFamily: "'SF Mono',monospace", fontSize: 9, color: "rgba(255,255,255,0.12)", letterSpacing: "0.14em" }}>{GALLERY_IMAGES.length} photos</span>
-          </div>
-          <span style={{ fontFamily: "'SF Mono',monospace", fontSize: 8, letterSpacing: "0.22em", color: "rgba(255,255,255,0.1)", textTransform: "uppercase" }}>scroll to explore</span>
-        </div>
-
-        {/* ── Masonry Grid (scrollable) ── */}
+        {/* Main scrollable content */}
         <div
           ref={scrollRef}
-          className="gallery-scroll"
+          className="lineage-scroll"
+          onScroll={handleScroll}
           style={{
-            flex: 1,
-            overflowY: "auto",
-            padding: "20px 24px 40px",
-          }}>
+            flex: 1, overflowY: "auto",
+            padding: "0 24px",
+            opacity: showIntro ? 0 : 1,
+            transition: "opacity 0.8s ease 0.2s",
+          }}
+        >
+          {/* Header */}
           <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 14,
-            alignItems: "start",
+            textAlign: "center",
+            padding: "60px 0 48px",
           }}>
-            {cols.map((col, ci) => (
-              <div key={ci} style={{ display: "flex", flexDirection: "column" }}>
-                {col.map((image) => {
-                  const globalIdx = GALLERY_IMAGES.findIndex(g => g.id === image.id);
-                  return (
-                    <GalleryCard
-                      key={image.id}
-                      image={image}
-                      index={globalIdx}
-                      onOpen={handleImageOpen}
-                      memoryMode={memoryMode}
-                      appeared={appeared.includes(image.id)}
-                    />
-                  );
-                })}
-              </div>
+            <div style={{
+              fontFamily: "'SF Mono',monospace", fontSize: 9,
+              letterSpacing: "0.38em", color: "rgba(255,255,255,0.15)",
+              textTransform: "uppercase", marginBottom: 16,
+            }}>legacy archive</div>
+            <div style={{
+              fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+              fontSize: "clamp(36px,7vw,72px)", fontWeight: 100,
+              letterSpacing: "0.25em", color: "rgba(255,255,255,0.88)",
+            }}>LINEAGE</div>
+            <div style={{
+              marginTop: 16,
+              fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+              fontSize: "clamp(11px,1.2vw,14px)", fontWeight: 200,
+              letterSpacing: "0.15em", color: "rgba(255,255,255,0.22)",
+            }}>The story began long before me.</div>
+          </div>
+
+          {/* Timeline grid */}
+          <div style={{
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: "1fr 48px 1fr",
+            columnGap: 0,
+            rowGap: "clamp(48px,6vh,80px)",
+            maxWidth: 900, margin: "0 auto",
+            paddingBottom: 80,
+          }}>
+            {/* Vertical line SVG */}
+            <svg
+              ref={lineRef}
+              style={{
+                position: "absolute",
+                left: "calc(50% - 1px)",
+                top: 0, bottom: 0,
+                width: 2,
+                height: "100%",
+                pointerEvents: "none",
+                overflow: "visible",
+              }}
+              preserveAspectRatio="none"
+            >
+              {/* Static faint full line */}
+              <line
+                x1="1" y1="0" x2="1" y2="100%"
+                stroke="rgba(255,255,255,0.06)"
+                strokeWidth="1"
+              />
+              {/* Animated progress line */}
+              <line
+                x1="1" y1="0" x2="1" y2="100%"
+                stroke="rgba(255,255,255,0.28)"
+                strokeWidth="1"
+                strokeDasharray="1"
+                strokeDashoffset={1 - lineProgress}
+                vectorEffect="non-scaling-stroke"
+                style={{ transition: "stroke-dashoffset 0.1s linear" }}
+              />
+            </svg>
+
+            {/* Render each generation */}
+            {LINEAGE.map((entry, index) => (
+              <>
+                <LineageCard
+                  key={`card-${entry.id}`}
+                  entry={entry}
+                  index={index}
+                  onOpen={(e) => { setModal(e); }}
+                />
+                <TimelineNode
+                  key={`node-${entry.id}`}
+                  entry={entry}
+                  index={index}
+                  activeNode={activeNode}
+                />
+                {/* Empty third-column spacer for left cards */}
+                {index % 2 === 0 && (
+                  <div
+                    key={`spacer-${entry.id}`}
+                    data-nodeid={entry.id}
+                    style={{ gridColumn: 3 }}
+                  />
+                )}
+                {index % 2 !== 0 && (
+                  <div
+                    key={`spacer2-${entry.id}`}
+                    data-nodeid={entry.id}
+                    style={{ gridColumn: 1 }}
+                  />
+                )}
+              </>
             ))}
           </div>
 
-          {/* Subtle footer hint */}
+          {/* Footer */}
           <div style={{
             textAlign: "center",
-            marginTop: 24,
-            fontFamily: "'SF Mono',monospace",
-            fontSize: 8,
-            letterSpacing: "0.22em",
-            color: "rgba(255,255,255,0.07)",
-            textTransform: "uppercase",
+            padding: "40px 0 80px",
           }}>
-            click any photo · esc to close · ← → to navigate
+            <div style={{
+              fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+              fontSize: "clamp(18px,3vw,28px)", fontWeight: 100,
+              letterSpacing: "0.22em", color: "rgba(255,255,255,0.35)",
+              marginBottom: 16,
+            }}>LEGACY CONTINUES</div>
+            <div style={{
+              fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+              fontSize: "clamp(11px,1.1vw,13px)", fontWeight: 200,
+              letterSpacing: "0.12em", color: "rgba(255,255,255,0.15)",
+              fontStyle: "italic",
+            }}>The next generation is still being written.</div>
+            {/* Trailing line */}
+            <div style={{
+              margin: "32px auto 0",
+              width: 1, height: 60,
+              background: "linear-gradient(to bottom, rgba(255,255,255,0.15), transparent)",
+            }} />
           </div>
         </div>
       </div>
 
-      {openImage && (
-        <GalleryViewer
-          image={openImage}
-          images={GALLERY_IMAGES}
-          onClose={handleClose}
-          onNext={handleNext}
-          onPrev={handlePrev}
-          memoryMode={memoryMode}
-        />
+      {/* Modal */}
+      {modal && (
+        <LineageModal entry={modal} onClose={() => setModal(null)} />
       )}
     </>
   );
 };
+
+/* ── Keep these named exports so nothing else in App.jsx breaks ── */
+export const GalleryCard   = () => null;  // replaced by LineageCard internally
+export const GalleryViewer = () => null;  // replaced by LineageModal internally
 /* ─── NOW PLAYING PAGE ───────────────────────────────── */
 const ALBUMS = [
 
@@ -841,14 +1310,14 @@ const Dock = ({ active, setActive }) => (
       <DockBtn label="Instagram" active={active === "instagram"} onClick={() => { soundSwitch(); setActive("instagram"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="6" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" /><circle cx="12" cy="12" r="4.5" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" /><circle cx="17.2" cy="6.8" r="0.85" fill="rgba(255,255,255,0.75)" /></svg>
       </DockBtn>
-     {/*  <DockBtn label="Gallery" active={active === "gallery"} onClick={() => { soundSwitch(); setActive("gallery"); }}>
+     <DockBtn label="Gallery" active={active === "gallery"} onClick={() => { soundSwitch(); setActive("gallery"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <rect x="2" y="3" width="9" height="9" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
           <rect x="13" y="3" width="9" height="6" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
           <rect x="2" y="14" width="9" height="7" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
           <rect x="13" y="11" width="9" height="10" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
         </svg>
-      </DockBtn>*/}
+      </DockBtn>
       <DockBtn label="Home" active={active === "home"} onClick={() => { soundSwitch(); setActive("home"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3l9 7.5V21H15v-5h-6v5H3z" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" strokeLinejoin="round" /></svg>
       </DockBtn>

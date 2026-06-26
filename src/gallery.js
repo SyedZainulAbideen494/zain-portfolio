@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import img1 from './photography/1.JPG'
-import img2 from './photography/2.JPG'
 import img3 from './photography/3.JPG'
 import img4 from './photography/4.JPG'
 import img5 from './photography/5.JPG'

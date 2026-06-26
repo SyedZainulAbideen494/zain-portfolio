@@ -11,7 +11,17 @@ import img9 from './photography/9.JPG'
 import img10 from './photography/10.JPG'
 import img11 from './photography/11.JPG'
 import img12 from './photography/12.JPG'
-
+import img13 from './photography/13.JPG'
+import img14 from './photography/14.JPG'
+import img15 from './photography/15.JPG'
+import img16 from './photography/16.JPG'
+import img17 from './photography/17.JPG'
+import img18 from './photography/18.JPG'
+import img19 from './photography/19.JPG'
+import img20 from './photography/20.JPG'
+import img21 from './photography/21.JPG'
+import img22 from './photography/22.JPG'
+import img23 from './photography/23.JPG'
 /* ─────────────────────────────────────────────────────────────
    PHOTOGRAPHY PAGE
    Drop-in replacement for GalleryPage in App.jsx
@@ -161,6 +171,138 @@ export const PHOTOS = [
    {
     id:12,
     src: img12,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+    {
+    id: 13,
+    src: img13,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+  {
+    id: 14,
+    src: img14,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+  {
+    id: 15,
+    src: img15,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+  {
+    id: 16,
+    src: img16,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+  {
+    id: 17,
+    src: img17,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+  {
+    id: 18,
+    src: img18,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+  {
+    id: 19,
+    src: img19,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+  {
+    id: 20,
+    src: img20,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+  {
+    id: 21,
+    src: img21,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+  {
+    id: 22,
+    src: img22,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+  {
+    id: 23,
+    src: img23,
     placeholder: PLACEHOLDER.haze,
     title: "Second Exposure",
     location: "Bengaluru",

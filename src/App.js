@@ -3,6 +3,7 @@ import img1 from "./gallery/IMG_2183.JPG";
 import img2 from "./gallery/1000111857 2.JPG";
 import img3 from "./gallery/PHOTO-2026-06-05-18-58-52.jpg";
 import img4 from "./gallery/x.JPG";
+import PhotographyPage from "./gallery";
 
 /* ─── AUDIO ENGINE ──────────────────────────────────── */
 let audioCtx = null;
@@ -690,7 +691,6 @@ const AlbumCard = memo(({ album, isCurrent, onSelect, size = 90 }) => {
     </div>
   );
 });
-
 const NowPlayingPage = memo(({ visible }) => {
   const [currentAlbum, setCurrentAlbum] = useState(ALBUMS[0]);
   const [flipped, setFlipped]           = useState(false);
@@ -698,6 +698,7 @@ const NowPlayingPage = memo(({ visible }) => {
   const [progress, setProgress]         = useState(0.35);
   const [mounted, setMounted]           = useState(false);
   const [breathe, setBreathe]           = useState(0);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     if (visible) { soundNowPlaying(); setTimeout(() => setMounted(true), 200); }
@@ -716,6 +717,12 @@ const NowPlayingPage = memo(({ visible }) => {
     setTilt({ x: dy * -15, y: dx * 15 });
   }, []);
 
+  const scrollBy = useCallback((dir) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: dir * 220, behavior: "smooth" });
+    }
+  }, []);
+
   const breatheScale = 1 + Math.sin(breathe) * 0.012;
   const albumSize    = 220;
 
@@ -730,6 +737,8 @@ const NowPlayingPage = memo(({ visible }) => {
         .album-flip-inner.flipped{transform:rotateY(180deg);}
         .album-face,.album-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;overflow:hidden;}
         .album-back{transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(12,12,12,0.95);border:1px solid rgba(255,255,255,0.1);}
+        .album-scroll-strip::-webkit-scrollbar{display:none;}
+        .album-scroll-strip{scrollbar-width:none;-ms-overflow-style:none;}
       `}</style>
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden", opacity: visible ? 1 : 0, filter: visible ? "blur(0)" : "blur(20px)", transform: visible ? "scale(1)" : "scale(0.95)", transition: "opacity 1s cubic-bezier(0.16,1,0.3,1), filter 1s, transform 1s" }}>
         <div style={{ position: "absolute", width: albumSize * 2.5, height: albumSize * 2.5, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 65%)", filter: "blur(60px)", transform: `scale(${breatheScale})`, transition: "transform 0.5s ease", top: "50%", left: "50%", marginTop: -albumSize * 1.25, marginLeft: -albumSize * 1.25 }} />
@@ -771,14 +780,37 @@ const NowPlayingPage = memo(({ visible }) => {
             <span style={{ fontFamily: "'SF Mono',monospace", fontSize: 8, color: "rgba(255,255,255,0.2)", letterSpacing: "0.1em" }}>{currentAlbum.total}</span>
           </div>
         </div>
-        <div style={{ marginTop: 40, display: "flex", flexDirection: "column", alignItems: "center", gap: 16, opacity: mounted ? 1 : 0, transition: "opacity 0.8s 0.9s ease" }}>
+
+        {/* ── Album strip with mobile scroll arrows ── */}
+        <div style={{ marginTop: 40, display: "flex", flexDirection: "column", alignItems: "center", gap: 16, opacity: mounted ? 1 : 0, transition: "opacity 0.8s 0.9s ease", width: "100%" }}>
           <div style={{ fontFamily: "'SF Mono',monospace", fontSize: 8, letterSpacing: "0.28em", color: "rgba(255,255,255,0.12)", textTransform: "uppercase" }}>recently played</div>
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            {ALBUMS.map(album => (
-              <AlbumCard key={album.id} album={album} isCurrent={album.id === currentAlbum.id} onSelect={(a) => { setCurrentAlbum(a); setFlipped(false); setProgress(0.1); }} />
-            ))}
+          <div style={{ position: "relative", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {/* Left arrow — mobile only */}
+            <button
+              onClick={() => scrollBy(-1)}
+              style={{ display: mobile() ? "flex" : "none", position: "absolute", left: 8, zIndex: 20, alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.14)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", cursor: "pointer", color: "rgba(255,255,255,0.6)", fontSize: 16, flexShrink: 0 }}
+            >‹</button>
+
+            <div
+              ref={scrollRef}
+              className="album-scroll-strip"
+              style={{ display: "flex", gap: 12, alignItems: "center", overflowX: mobile() ? "auto" : "visible", flexWrap: mobile() ? "nowrap" : "nowrap", maxWidth: mobile() ? "calc(100vw - 80px)" : "none", padding: mobile() ? "8px 16px" : "0", scrollSnapType: mobile() ? "x mandatory" : "none" }}
+            >
+              {ALBUMS.map(album => (
+                <div key={album.id} style={{ scrollSnapAlign: mobile() ? "center" : "none", flexShrink: 0 }}>
+                  <AlbumCard album={album} isCurrent={album.id === currentAlbum.id} onSelect={(a) => { setCurrentAlbum(a); setFlipped(false); setProgress(0.1); }} />
+                </div>
+              ))}
+            </div>
+
+            {/* Right arrow — mobile only */}
+            <button
+              onClick={() => scrollBy(1)}
+              style={{ display: mobile() ? "flex" : "none", position: "absolute", right: 8, zIndex: 20, alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.14)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", cursor: "pointer", color: "rgba(255,255,255,0.6)", fontSize: 16, flexShrink: 0 }}
+            >›</button>
           </div>
         </div>
+
         <div style={{ position: "absolute", bottom: "11%", fontFamily: "'SF Mono',monospace", fontSize: 8, letterSpacing: "0.2em", color: "rgba(255,255,255,0.07)", opacity: mounted && !flipped ? 1 : 0, transition: "opacity 0.5s ease" }}>click album to flip</div>
       </div>
     </>
@@ -813,6 +845,16 @@ const Dock = memo(({ active, setActive }) => (
           <rect x="13" y="11" width="9" height="10" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
         </svg>
       </DockBtn>
+
+<DockBtn label="Gallery"     active={active === "photography"}    onClick={() => { soundSwitch(); setActive("photography"); }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <rect x="2" y="3" width="9" height="9"  rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
+          <rect x="13" y="3" width="9" height="6"  rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
+          <rect x="2"  y="14" width="9" height="7" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
+          <rect x="13" y="11" width="9" height="10" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
+        </svg>
+      </DockBtn>
+
       <DockBtn label="Home"        active={active === "home"}       onClick={() => { soundSwitch(); setActive("home"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3l9 7.5V21H15v-5h-6v5H3z" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" strokeLinejoin="round" /></svg>
       </DockBtn>
@@ -899,6 +941,8 @@ export default function App() {
           <div style={{ position: "absolute", inset: 0, pointerEvents: active === "instagram"  ? "auto" : "none" }}><InstagramPage  visible={active === "instagram"} /></div>
           <div style={{ position: "absolute", inset: 0, pointerEvents: active === "gallery"    ? "auto" : "none" }}><GalleryPage    visible={active === "gallery"} /></div>
           <div style={{ position: "absolute", inset: 0, pointerEvents: active === "nowplaying" ? "auto" : "none" }}><NowPlayingPage visible={active === "nowplaying"} /></div>
+                    <div style={{ position: "absolute", inset: 0, pointerEvents: active === "photography"    ? "auto" : "none" }}><PhotographyPage    visible={active === "photography"} /></div>
+
           <div style={{ position: "absolute", inset: 0, pointerEvents: active === "spotify"    ? "auto" : "none" }}><SpotifyPage    visible={active === "spotify"} /></div>
         </div>
       </div>

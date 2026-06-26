@@ -846,15 +846,40 @@ const Dock = memo(({ active, setActive }) => (
         </svg>
       </DockBtn>
 
-<DockBtn label="Gallery"     active={active === "photography"}    onClick={() => { soundSwitch(); setActive("photography"); }}>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <rect x="2" y="3" width="9" height="9"  rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
-          <rect x="13" y="3" width="9" height="6"  rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
-          <rect x="2"  y="14" width="9" height="7" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
-          <rect x="13" y="11" width="9" height="10" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
-        </svg>
-      </DockBtn>
-
+<DockBtn
+  label="Photography"
+  active={active === "photography"}
+  onClick={() => {
+    soundSwitch();
+    setActive("photography");
+  }}
+>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+    <rect
+      x="3"
+      y="7"
+      width="18"
+      height="12"
+      rx="3"
+      stroke="rgba(255,255,255,0.75)"
+      strokeWidth="1.2"
+    />
+    <path
+      d="M8 7L9.5 5H14.5L16 7"
+      stroke="rgba(255,255,255,0.75)"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <circle
+      cx="12"
+      cy="13"
+      r="3.2"
+      stroke="rgba(255,255,255,0.75)"
+      strokeWidth="1.2"
+    />
+  </svg>
+</DockBtn>
       <DockBtn label="Home"        active={active === "home"}       onClick={() => { soundSwitch(); setActive("home"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3l9 7.5V21H15v-5h-6v5H3z" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" strokeLinejoin="round" /></svg>
       </DockBtn>

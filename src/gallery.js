@@ -806,8 +806,8 @@ export const PhotographyPage = memo(({ visible }) => {
               animation: headerVisible ? "photoHeaderSlide 0.9s 0.25s cubic-bezier(0.16,1,0.3,1) both" : "none",
             }}
           >
-            Moments I never wanted to forget.
-          </div>
+The shots i find amusing
+       </div>
         </div>
 
         {/* ── Carousel + nav ── */}

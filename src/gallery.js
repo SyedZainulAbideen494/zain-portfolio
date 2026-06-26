@@ -8,6 +8,9 @@ import img6 from './photography/6.JPG'
 import img7 from './photography/7.JPG'
 import img8 from './photography/8.jpg'
 import img9 from './photography/9.JPG'
+import img10 from './photography/10.JPG'
+import img11 from './photography/11.JPG'
+import img12 from './photography/12.JPG'
 
 /* ─────────────────────────────────────────────────────────────
    PHOTOGRAPHY PAGE
@@ -133,6 +136,42 @@ export const PHOTOS = [
     {
     id: 9,
     src: img9,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+   {
+    id: 10,
+    src: img10,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+   {
+    id:11,
+    src: img11,
+    placeholder: PLACEHOLDER.haze,
+    title: "Second Exposure",
+    location: "Bengaluru",
+    year: "2024",
+    date: "February 18, 2024",
+    camera: "Shot on Film",
+    lens: "28mm · Fuji Superia 400",
+    emoji: "⬢",
+  },
+   {
+    id:12,
+    src: img12,
     placeholder: PLACEHOLDER.haze,
     title: "Second Exposure",
     location: "Bengaluru",

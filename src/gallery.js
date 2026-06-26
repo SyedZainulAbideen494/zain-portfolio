@@ -49,18 +49,7 @@ export const PHOTOS = [
     lens: "Main · 24mm",
     emoji: "◈",
   },
-  {
-    id: 2,
-    src: img2,
-    placeholder: PLACEHOLDER.cool,
-    title: "Fog Study",
-    location: "London",
-    year: "2023",
-    date: "November 7, 2023",
-    camera: "Shot on Film",
-    lens: "35mm · Kodak Portra 400",
-    emoji: "⬡",
-  },
+
   {
     id: 3,
     src: img3,

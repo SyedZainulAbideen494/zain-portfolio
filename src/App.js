@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, memo } from "react";
 import img1 from "./gallery/IMG_2183.JPG";
 import img2 from "./gallery/1000111857 2.JPG";
 import img3 from "./gallery/PHOTO-2026-06-05-18-58-52.jpg";
-import img4 from "./gallery/124q.JPG";
+import img4 from "./gallery/x.JPG";
 
 /* ─── AUDIO ENGINE ──────────────────────────────────── */
 let audioCtx = null;
@@ -354,10 +354,10 @@ const SpotifyPage = memo(({ visible }) => {
 
 /* ─── LINEAGE DATA ─────────────────────────────────────────── */
 export const LINEAGE = [
-  { id: 1, generation: "Generation I",  label: "Great Grandfather", name: "Syed Basheer",          born: "c. 1920s", location: "Unknown", occupation: "Chemical factory owner", quote: "Some roots run deeper than memory can reach.", portrait: img1, grayscale: 1,   sepia: 0.6, grain: true  },
-  { id: 2, generation: "Generation II", label: "Grandfather",        name: "Syed Abdul Rahman",     born: "c. 1940s", location: "Unknown", occupation: "M.D At Aramco",          quote: "He built something where there was nothing.",  portrait: img2, grayscale: 0.9, sepia: 0.3, grain: true  },
-  { id: 3, generation: "Generation III",label: "Father",             name: "Syed Kaleemullah",      born: "c. 1970s", location: "Unknown", occupation: "Businesses",             quote: "Every generation carries the weight of the last.", portrait: img3, grayscale: 0.7, sepia: 0.1, grain: false },
-  { id: 4, generation: "Generation IV", label: "Me",                 name: "Syed Zain-ul Abideen",  born: "c. 2007", location: "Unknown", occupation: "Pilot",                  quote: "He gave me everything he never had.",         portrait: img4, grayscale: 0.3, sepia: 0,   grain: false },
+  { id: 1, generation: "Generation I",  label: "Great Grandfather", name: "Syed Basheer",          born: "c. 1920s", location: "Unknown", occupation: "Chemical factory owner", quote: "", portrait: img1, grayscale: 1,   sepia: 0.6, grain: true  },
+  { id: 2, generation: "Generation II", label: "Grandfather",        name: "Syed Abdul Rahman",     born: "c. 1940s", location: "Unknown", occupation: "M.D At Aramco",          quote: "",  portrait: img2, grayscale: 0.9, sepia: 0.3, grain: true  },
+  { id: 3, generation: "Generation III",label: "Father",             name: "Syed Kaleemullah",      born: "c. 1970s", location: "Unknown", occupation: "Businesses",             quote: "", portrait: img3, grayscale: 0.7, sepia: 0.1, grain: false },
+  { id: 4, generation: "Generation IV", label: "Me",                 name: "Syed Zain-ul Abideen",  born: "c. 2007", location: "Unknown", occupation: "Pilot",                  quote: "",         portrait: img4, grayscale: 0.3, sepia: 0,   grain: false },
 ];
 
 /* ── Portrait circle ── */
@@ -584,6 +584,8 @@ export const GalleryPage = ({ visible }) => {
 export const GalleryCard   = () => null;
 export const GalleryViewer = () => null;
 
+
+
 /* ─── NOW PLAYING PAGE ───────────────────────────────── */
 const ALBUMS = [
   { id: 5,  title: "Hanging by a Thread",   artist: "Beckett",         year: "2005", duration: "3:42", genre: "Alternative Rock",  color: "#121212", src: "https://i.scdn.co/image/ab67616d0000b2731298994ccf90493fa88ab8dc",                                                                               track: "Hanging by a Thread",   elapsed: "1:28", total: "3:42" },
@@ -752,14 +754,14 @@ const Dock = memo(({ active, setActive }) => (
       <DockBtn label="Instagram"   active={active === "instagram"}  onClick={() => { soundSwitch(); setActive("instagram"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="6" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" /><circle cx="12" cy="12" r="4.5" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" /><circle cx="17.2" cy="6.8" r="0.85" fill="rgba(255,255,255,0.75)" /></svg>
       </DockBtn>
-    {/* <DockBtn label="Gallery"     active={active === "gallery"}    onClick={() => { soundSwitch(); setActive("gallery"); }}>
+     <DockBtn label="Gallery"     active={active === "gallery"}    onClick={() => { soundSwitch(); setActive("gallery"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <rect x="2" y="3" width="9" height="9"  rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
           <rect x="13" y="3" width="9" height="6"  rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
           <rect x="2"  y="14" width="9" height="7" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
           <rect x="13" y="11" width="9" height="10" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
         </svg>
-      </DockBtn>*/}  
+      </DockBtn>
       <DockBtn label="Home"        active={active === "home"}       onClick={() => { soundSwitch(); setActive("home"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3l9 7.5V21H15v-5h-6v5H3z" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" strokeLinejoin="round" /></svg>
       </DockBtn>

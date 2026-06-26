@@ -269,7 +269,22 @@ const HomePage = memo(({ visible }) => {
         <div style={{ marginTop: "4px", display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", borderRadius: 999, background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.05)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", animation: "fadeSlide 1.2s 0.8s both", zIndex: 3 }}>
           <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(255,255,255,0.4)", boxShadow: "0 0 6px rgba(255,255,255,0.25)" }} />
           <div style={{ fontFamily: "'SF Mono', monospace", fontSize: "9px", letterSpacing: "0.18em", color: "rgba(255,255,255,0.24)", textTransform: "uppercase" }}>{time}</div>
+        
         </div>
+        <div
+  style={{
+    marginTop: "14px",
+    fontFamily: "'SF Pro Display', sans-serif",
+    fontSize: "clamp(12px,1.2vw,14px)",
+    fontWeight: 200,
+    fontStyle: "italic",
+    letterSpacing: "0.04em",
+    color: "rgba(255,255,255,0.28)",
+    animation: "fadeSlide 1.2s 0.6s both",
+    zIndex: 2
+  }}
+>
+See you at 35,000 feet.</div>
       </div>
     </>
   );

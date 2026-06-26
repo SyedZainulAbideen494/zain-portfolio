@@ -337,13 +337,69 @@ const SpotifyPage = memo(({ visible }) => {
   );
 });
 
-/* ─── LINEAGE DATA ─────────────────────────────────────────── */
 export const LINEAGE = [
-  { id: 1, generation: "Generation I",  label: "Great Grandfather", name: "Syed Basheer",          born: "c. 1880", location: "Unknown", occupation: "Chemical factory owner", quote: "Some roots run deeper than memory can reach.", portrait: img1, grayscale: 1,   sepia: 0.6, grain: true  },
-  { id: 2, generation: "Generation II", label: "Grandfather",        name: "Syed Abdul Rahman",     born: "c. 1910", location: "Unknown", occupation: "M.D At Aramco",          quote: "He built something where there was nothing.",  portrait: img2, grayscale: 0.9, sepia: 0.3, grain: true  },
-  { id: 3, generation: "Generation III",label: "Father",             name: "Syed Kaleemullah",      born: "c. 1940", location: "Unknown", occupation: "Businesses",             quote: "Every generation carries the weight of the last.", portrait: img3, grayscale: 0.7, sepia: 0.1, grain: false },
-  { id: 4, generation: "Generation IV", label: "Me",                 name: "Syed Zain-ul Abideen",  born: "c. 1965", location: "Unknown", occupation: "Pilot",                  quote: "He gave me everything he never had.",         portrait: img4, grayscale: 0.3, sepia: 0,   grain: false },
+{
+id: 1,
+generation: "Generation I",
+label: "Foundation",
+name: "Syed Basheer",
+born: "Early 1900s",
+location: "India",
+occupation: "Chemical Factory Owner",
+quote: "Every legacy begins with someone willing to build from nothing.",
+portrait: img1,
+grayscale: 1,
+sepia: 0.6,
+grain: true,
+},
+
+{
+id: 2,
+generation: "Generation II",
+label: "Excellence",
+name: "Syed Abdul Rahman",
+born: "Mid 1900s",
+location: "Saudi Arabia",
+occupation: "Managing Director · Aramco",
+quote: "Success isn't inherited. Every generation earns it again.",
+portrait: img2,
+grayscale: 0.75,
+sepia: 0.25,
+grain: true,
+},
+
+{
+id: 3,
+generation: "Generation III",
+label: "Growth",
+name: "Syed Kaleemullah",
+born: "Late 1900s",
+location: "Bangalore",
+occupation: "Businesses",
+quote: "Build quietly. Let the results introduce you.",
+portrait: img3,
+grayscale: 0.35,
+sepia: 0,
+grain: false,
+},
+
+{
+id: 4,
+generation: "Generation IV",
+label: "Next",
+name: "Syed Zain-ul Abideen",
+born: "2007",
+location: "Bangalore",
+occupation: "Student · Future Pilot · Builder",
+quote: "Every generation writes a chapter. Mine is just beginning.",
+portrait: img4,
+grayscale: 0,
+sepia: 0,
+grain: false,
+isSelf: true,
+},
 ];
+
 
 /* ── Portrait circle ── */
 const Portrait = memo(({ entry, size = 80, zoom = false }) => {

@@ -354,12 +354,63 @@ const SpotifyPage = memo(({ visible }) => {
 
 /* ─── LINEAGE DATA ─────────────────────────────────────────── */
 export const LINEAGE = [
-  { id: 1, generation: "Generation I",  label: "Great Grandfather", name: "Syed Basheer",          born: "c. 1920s", location: "Unknown", occupation: "Chemical factory owner", quote: "View", portrait: img1, grayscale: 1,   sepia: 0.6, grain: true  },
-  { id: 2, generation: "Generation II", label: "Grandfather",        name: "Syed Abdul Rahman",     born: "c. 1940s", location: "Unknown", occupation: "M.D At Aramco",          quote: "View",  portrait: img2, grayscale: 0.9, sepia: 0.3, grain: true  },
-  { id: 3, generation: "Generation III",label: "Father",             name: "Syed Kaleemullah",      born: "c. 1970s", location: "Unknown", occupation: "Businesses",             quote: "View", portrait: img3, grayscale: 0.7, sepia: 0.1, grain: false },
-  { id: 4, generation: "Generation IV", label: "Me",                 name: "Syed Zain-ul Abideen",  born: "c. 2007", location: "Unknown", occupation: "Pilot",                  quote: "View",         portrait: img4, grayscale: 0.3, sepia: 0,   grain: false },
+  {
+    id: 1,
+    generation: "Generation I",
+    label: "Great Grandfather",
+    name: "Syed Basheer",
+    born: "c. 1920s",
+    location: "Mysore (Present-day Bengaluru)",
+    occupation: "Chemical Factory Owner",
+    quote: "View",
+    portrait: img1,
+    grayscale: 1,
+    sepia: 0.6,
+    grain: true
+  },
+  {
+    id: 2,
+    generation: "Generation II",
+    label: "Grandfather",
+    name: "Syed Abdul Rahman",
+    born: "c. 1940s",
+    location: "London • Saudi Arabia",
+    occupation: "Managing Director, Aramco",
+    quote: "View",
+    portrait: img2,
+    grayscale: 0.9,
+    sepia: 0.3,
+    grain: true
+  },
+  {
+    id: 3,
+    generation: "Generation III",
+    label: "Father",
+    name: "Syed Kaleemullah",
+    born: "c. 1970s",
+    location: "Bengaluru",
+    occupation: "Businesses",
+    quote: "View",
+    portrait: img3,
+    grayscale: 0.7,
+    sepia: 0.1,
+    grain: false
+  },
+  {
+    id: 4,
+    generation: "Generation IV",
+    label: "Me",
+    name: "Syed Zain-ul Abideen",
+    born: "2007",
+    location: "Bengaluru",
+    occupation: "Future Pilot",
+    quote: "View",
+    portrait: img4,
+    grayscale: 0.3,
+    sepia: 0,
+    grain: false
+  }
 ];
-
 /* ── Portrait circle ── */
 const Portrait = memo(({ entry, size = 80, zoom = false }) => {
   const filter = [

@@ -25,9 +25,6 @@ import {
   useCallback,
   useReducer,
   memo,
-  createContext,
-  useContext,
-  useMemo,
 } from "react";
 import { createPortal } from "react-dom";
 
@@ -42,7 +39,6 @@ import img8  from "./photography/8.jpg";
 import img9  from "./photography/9.JPG";
 import img11 from "./photography/11.JPG";
 import img12 from "./photography/12.JPG";
-import img13 from "./photography/13.JPG";
 import img14 from "./photography/14.JPG";
 import img15 from "./photography/15.JPG";
 import img16 from "./photography/16.JPG";
@@ -66,7 +62,6 @@ export const PHOTOS = [
   { id: 9,  src: img9,  title: "Periphery",            location: "Bengaluru", year: "2024", date: "February 18, 2024", camera: "Shot on Film",   lens: "28mm · Fuji Superia 400" },
   { id: 11, src: img11, title: "Overstay",             location: "Bengaluru", year: "2024", date: "February 18, 2024", camera: "Shot on Film",   lens: "28mm · Fuji Superia 400" },
   { id: 12, src: img12, title: "Held Breath",          location: "Bengaluru", year: "2024", date: "February 18, 2024", camera: "Shot on Film",   lens: "28mm · Fuji Superia 400" },
-  { id: 13, src: img13, title: "Ambient",              location: "Bengaluru", year: "2024", date: "February 18, 2024", camera: "Shot on Film",   lens: "28mm · Fuji Superia 400" },
   { id: 14, src: img14, title: "Diffuse",              location: "Bengaluru", year: "2024", date: "February 18, 2024", camera: "Shot on Film",   lens: "28mm · Fuji Superia 400" },
   { id: 15, src: img15, title: "Underexposed",         location: "Bengaluru", year: "2024", date: "February 18, 2024", camera: "Shot on Film",   lens: "28mm · Fuji Superia 400" },
   { id: 16, src: img16, title: "Soft Stop",            location: "Bengaluru", year: "2024", date: "February 18, 2024", camera: "Shot on Film",   lens: "28mm · Fuji Superia 400" },

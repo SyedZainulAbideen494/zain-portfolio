@@ -4,6 +4,7 @@ import img2 from "./gallery/1000111857 2.JPG";
 import img3 from "./gallery/PHOTO-2026-06-05-18-58-52.jpg";
 import img4 from "./gallery/x.JPG";
 import PhotographyPage from "./gallery";
+import OneLastThing from "./onelast";
 
 /* ─── AUDIO ENGINE ──────────────────────────────────── */
 let audioCtx = null;
@@ -834,9 +835,17 @@ const DockBtn = memo(({ label, active, onClick, children }) => {
 const Dock = memo(({ active, setActive }) => (
   <div style={{ position: "fixed", bottom: "clamp(18px,4vh,34px)", left: "50%", transform: "translateX(-50%)", zIndex: 100 }}>
     <div style={{ display: "flex", alignItems: "flex-end", gap: "clamp(8px,2vw,14px)", padding: "clamp(10px,2vw,14px) clamp(16px,3vw,22px)", borderRadius: "clamp(22px,4vw,30px)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.09)", backdropFilter: "blur(50px)", WebkitBackdropFilter: "blur(50px)", boxShadow: "0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.2)" }}>
-      <DockBtn label="Instagram"   active={active === "instagram"}  onClick={() => { soundSwitch(); setActive("instagram"); }}>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="6" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" /><circle cx="12" cy="12" r="4.5" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" /><circle cx="17.2" cy="6.8" r="0.85" fill="rgba(255,255,255,0.75)" /></svg>
-      </DockBtn>
+<DockBtn label="last" active={active === "last"} onClick={() => { soundSwitch(); setActive("last"); }}>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+    {/* door frame */}
+    <path d="M13 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h8" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+    {/* exit arrow */}
+    <path d="M16 8l4 4-4 4" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M20 12H9" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" strokeLinecap="round"/>
+    {/* door knob */}
+    <circle cx="7.5" cy="12" r="0.8" fill="rgba(255,255,255,0.75)"/>
+  </svg>
+</DockBtn>
      <DockBtn label="Gallery"     active={active === "gallery"}    onClick={() => { soundSwitch(); setActive("gallery"); }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <rect x="2" y="3" width="9" height="9"  rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
@@ -967,6 +976,7 @@ export default function App() {
           <div style={{ position: "absolute", inset: 0, pointerEvents: active === "gallery"    ? "auto" : "none" }}><GalleryPage    visible={active === "gallery"} /></div>
           <div style={{ position: "absolute", inset: 0, pointerEvents: active === "nowplaying" ? "auto" : "none" }}><NowPlayingPage visible={active === "nowplaying"} /></div>
                     <div style={{ position: "absolute", inset: 0, pointerEvents: active === "photography"    ? "auto" : "none" }}><PhotographyPage    visible={active === "photography"} /></div>
+                    <div style={{ position: "absolute", inset: 0, pointerEvents: active === "last"    ? "auto" : "none" }}><OneLastThing    visible={active === "last"} /></div>
 
           <div style={{ position: "absolute", inset: 0, pointerEvents: active === "spotify"    ? "auto" : "none" }}><SpotifyPage    visible={active === "spotify"} /></div>
         </div>

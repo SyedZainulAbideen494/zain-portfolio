@@ -291,7 +291,7 @@ export default function OneLastThing({ visible }) {
             opacity:    revealIn ? 1 : 0,
             filter:     revealIn ? "blur(0)" : "blur(12px)",
             transition: `opacity 2.4s ${ease}, filter 2.4s ${ease}`,
-          }}>Fuck you.</div>
+          }}>I can fly planes ☺️.</div>
         </div>
 
         {/* ── Footer ── */}

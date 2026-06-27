@@ -1,23 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /* ─── Audio reuses the app's pattern ──────────────────── */
 let _audioCtx = null;
 const getAudio = () => {
   if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   return _audioCtx;
-};
-const playTone = (freq, type, duration, vol = 0.06, attack = 0.01) => {
-  try {
-    const ctx = getAudio();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = type; osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + attack);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-    osc.start(); osc.stop(ctx.currentTime + duration + 0.05);
-  } catch (_) {}
 };
 
 const playSynth = () => {

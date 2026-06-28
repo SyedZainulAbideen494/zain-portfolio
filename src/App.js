@@ -846,14 +846,7 @@ const Dock = memo(({ active, setActive }) => (
     <circle cx="7.5" cy="12" r="0.8" fill="rgba(255,255,255,0.75)"/>
   </svg>
 </DockBtn>
-     <DockBtn label="Gallery"     active={active === "gallery"}    onClick={() => { soundSwitch(); setActive("gallery"); }}>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <rect x="2" y="3" width="9" height="9"  rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
-          <rect x="13" y="3" width="9" height="6"  rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
-          <rect x="2"  y="14" width="9" height="7" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
-          <rect x="13" y="11" width="9" height="10" rx="2" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" />
-        </svg>
-      </DockBtn>
+
 
 <DockBtn
   label="Photography"

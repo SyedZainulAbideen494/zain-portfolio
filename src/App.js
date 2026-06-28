@@ -286,7 +286,7 @@ const HomePage = memo(({ visible }) => {
     zIndex: 2
   }}
 >
-See you at 35,000 feet.</div>
+I wish you well.</div>
       </div>
     </>
   );

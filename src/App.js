@@ -286,7 +286,7 @@ const HomePage = memo(({ visible }) => {
     zIndex: 2
   }}
 >
-I wish you well.</div>
+Aeroholic.</div>
       </div>
     </>
   );

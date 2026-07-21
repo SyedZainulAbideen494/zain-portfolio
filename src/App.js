@@ -5,6 +5,7 @@ import img3 from "./gallery/PHOTO-2026-06-05-18-58-52.jpg";
 import img4 from "./gallery/x.JPG";
 import PhotographyPage from "./gallery";
 import OneLastThing from "./onelast";
+import IntroSequence from "./intro"; // <-- NEW: the cinematic intro you already built
 
 /* ─── AUDIO ENGINE ──────────────────────────────────── */
 let audioCtx = null;
@@ -901,6 +902,7 @@ const Dock = memo(({ active, setActive }) => (
 
 /* ─── APP ────────────────────────────────────────────── */
 export default function App() {
+  const [showIntro, setShowIntro] = useState(true); // NEW: gate the whole app behind the intro
   const [active, setActive]   = useState("home");
   const [ready, setReady]     = useState(false);
   const [hover, setHover]     = useState(false);
@@ -908,7 +910,12 @@ export default function App() {
   const [ripples, setRipples] = useState([]);
   const mousePos = useMousePos();
 
-  useEffect(() => { const t = setTimeout(() => { setReady(true); soundIntro(); }, 300); return () => clearTimeout(t); }, []);
+  // Only fade the home page in once the intro has finished
+  useEffect(() => {
+    if (showIntro) return;
+    const t = setTimeout(() => { setReady(true); soundIntro(); }, 150);
+    return () => clearTimeout(t);
+  }, [showIntro]);
 
   useEffect(() => {
     if (mobile()) return;
@@ -932,6 +939,11 @@ export default function App() {
       window.removeEventListener("mouseover", over);
     };
   }, []);
+
+  // NEW: show the intro first, then mount the real app once it completes
+  if (showIntro) {
+    return <IntroSequence onComplete={() => setShowIntro(false)} />;
+  }
 
   return (
     <>
@@ -968,9 +980,8 @@ export default function App() {
           <div style={{ position: "absolute", inset: 0, pointerEvents: active === "instagram"  ? "auto" : "none" }}><InstagramPage  visible={active === "instagram"} /></div>
           <div style={{ position: "absolute", inset: 0, pointerEvents: active === "gallery"    ? "auto" : "none" }}><GalleryPage    visible={active === "gallery"} /></div>
           <div style={{ position: "absolute", inset: 0, pointerEvents: active === "nowplaying" ? "auto" : "none" }}><NowPlayingPage visible={active === "nowplaying"} /></div>
-                    <div style={{ position: "absolute", inset: 0, pointerEvents: active === "photography"    ? "auto" : "none" }}><PhotographyPage    visible={active === "photography"} /></div>
-                    <div style={{ position: "absolute", inset: 0, pointerEvents: active === "last"    ? "auto" : "none" }}><OneLastThing    visible={active === "last"} /></div>
-
+          <div style={{ position: "absolute", inset: 0, pointerEvents: active === "photography"    ? "auto" : "none" }}><PhotographyPage    visible={active === "photography"} /></div>
+          <div style={{ position: "absolute", inset: 0, pointerEvents: active === "last"    ? "auto" : "none" }}><OneLastThing    visible={active === "last"} /></div>
           <div style={{ position: "absolute", inset: 0, pointerEvents: active === "spotify"    ? "auto" : "none" }}><SpotifyPage    visible={active === "spotify"} /></div>
         </div>
       </div>

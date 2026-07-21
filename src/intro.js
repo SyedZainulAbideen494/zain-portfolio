@@ -1,14 +1,5 @@
 import { useState, useEffect, useRef, memo } from "react";
 
-/* ─── STORAGE FLAG ───────────────────────────────────── */
-const INTRO_KEY = "intro_seen_v1";
-const hasSeenIntro = () => {
-  try { return localStorage.getItem(INTRO_KEY) === "1"; } catch (_) { return true; }
-};
-const markIntroSeen = () => {
-  try { localStorage.setItem(INTRO_KEY, "1"); } catch (_) {}
-};
-
 /* ─── AUDIO ──────────────────────────────────────────── */
 let audioCtx = null;
 const getAudio = () => {
@@ -154,12 +145,10 @@ const ParticleBurst = memo(({ active }) => {
 
 /* ─── MAIN SEQUENCE ──────────────────────────────────── */
 export default function IntroSequence({ onComplete }) {
-  const [skip, setSkip]   = useState(hasSeenIntro());
   const [phase, setPhase] = useState(0);
-  useDrone(!skip && phase >= 1 && phase < 10);
+  useDrone(phase >= 1 && phase < 10);
 
   useEffect(() => {
-    if (skip) { onComplete && onComplete(); return; }
     const steps = [
       [400,  1, () => ping(660, 0.4, 0.04)],                     // center dot
       [700,  2, metallicTick],                                    // upright triangle
@@ -176,13 +165,10 @@ export default function IntroSequence({ onComplete }) {
       setTimeout(() => { setPhase(p); fn && fn(); }, t)
     );
     const done = setTimeout(() => {
-      markIntroSeen();
       onComplete && onComplete();
     }, 6500);
     return () => { timers.forEach(clearTimeout); clearTimeout(done); };
-  }, [skip]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (skip) return null;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const rotated = phase >= 8;
   const pulsing = phase >= 9;

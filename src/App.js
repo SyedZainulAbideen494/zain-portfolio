@@ -6,6 +6,8 @@ import img4 from "./gallery/x.JPG";
 import PhotographyPage from "./gallery";
 import OneLastThing from "./onelast";
 import IntroSequence from "./intro"; // <-- NEW: the cinematic intro you already built
+import { sendVisitorEmail } from "./utils/visitorEmail";
+
 
 /* ─── AUDIO ENGINE ──────────────────────────────────── */
 let audioCtx = null;
@@ -909,7 +911,9 @@ export default function App() {
   const [click, setClick]     = useState(false);
   const [ripples, setRipples] = useState([]);
   const mousePos = useMousePos();
-
+  useEffect(() => {
+    sendVisitorEmail();
+  }, []);
   // Only fade the home page in once the intro has finished
   useEffect(() => {
     if (showIntro) return;
@@ -944,6 +948,7 @@ export default function App() {
   if (showIntro) {
     return <IntroSequence onComplete={() => setShowIntro(false)} />;
   }
+
 
   return (
     <>

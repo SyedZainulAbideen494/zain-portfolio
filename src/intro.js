@@ -246,18 +246,61 @@ export default function IntroSequence({ onComplete }) {
         ctx.stroke();
       }
 
-      // aircraft, banked ~20-25° through turns via horizontal foreshortening
+      // aircraft — top-down Boeing 777-style silhouette, banked ~20-25° through turns via horizontal foreshortening
       ctx.save();
       ctx.translate(pos.x, pos.y);
       ctx.rotate((heading + 90) * (Math.PI / 180));
       ctx.scale(turning ? 0.6 : 1, 1);
-      ctx.beginPath();
-      ctx.moveTo(0, -6.5); ctx.lineTo(4.2, 5); ctx.lineTo(0, 2.5); ctx.lineTo(-4.2, 5);
-      ctx.closePath();
       ctx.fillStyle = "rgba(255,255,255,0.95)";
-      ctx.shadowColor = "rgba(255,255,255,0.75)";
-      ctx.shadowBlur = 8;
+
+      // long, slender fuselage with a pointed nose and tapered tail cone
+      ctx.beginPath();
+      ctx.moveTo(0, -7);
+      ctx.quadraticCurveTo(0.65, -6.2, 0.7, -4.5);
+      ctx.lineTo(0.75, -0.5);
+      ctx.lineTo(0.55, 2.5);
+      ctx.quadraticCurveTo(0.4, 5.5, 0, 7);
+      ctx.quadraticCurveTo(-0.4, 5.5, -0.55, 2.5);
+      ctx.lineTo(-0.75, -0.5);
+      ctx.quadraticCurveTo(-0.7, -4.5, -0.65, -6.2);
+      ctx.closePath();
       ctx.fill();
+
+      // broad, swept-back main wing with a curved trailing edge and a raked tip — drawn once, mirrored for symmetry
+      const drawMainWing = () => {
+        ctx.beginPath();
+        ctx.moveTo(0.7, -0.7);
+        ctx.lineTo(6.8, 2.6);
+        ctx.lineTo(6.3, 3.3);
+        ctx.quadraticCurveTo(3.0, 2.6, 0.9, 1.8);
+        ctx.closePath();
+        ctx.fill();
+      };
+      drawMainWing();
+      ctx.save(); ctx.scale(-1, 1); drawMainWing(); ctx.restore();
+
+      // horizontal stabilizers at the tail
+      const drawStabilizer = () => {
+        ctx.beginPath();
+        ctx.moveTo(0.4, 4.8);
+        ctx.lineTo(3.0, 6.3);
+        ctx.lineTo(2.7, 6.8);
+        ctx.quadraticCurveTo(1.2, 6.2, 0.5, 5.6);
+        ctx.closePath();
+        ctx.fill();
+      };
+      drawStabilizer();
+      ctx.save(); ctx.scale(-1, 1); drawStabilizer(); ctx.restore();
+
+      // vertical tail fin, seen edge-on from directly above as a slender diamond on the centerline
+      ctx.beginPath();
+      ctx.moveTo(0, 4.3);
+      ctx.lineTo(0.35, 6.5);
+      ctx.lineTo(0, 7.2);
+      ctx.lineTo(-0.35, 6.5);
+      ctx.closePath();
+      ctx.fill();
+
       ctx.restore();
 
       if (elapsed < T_END) {

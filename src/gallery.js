@@ -54,7 +54,6 @@ import img23 from "./photography/23.JPG";
 export const PHOTOS = [
   { id: 1,  src: img1,  title: "Still Light",         location: "Bengaluru", year: "2024", date: "March 14, 2024",    camera: "iPhone 15 Pro",  lens: "Main · 24mm" },
   { id: 3,  src: img3,  title: "Last Hour",            location: "Mysore",    year: "2023", date: "August 21, 2023",   camera: "iPhone 14 Pro",  lens: "Ultrawide · 13mm" },
-  { id: 4,  src: img4,  title: "Between Frames",       location: "Bengaluru", year: "2024", date: "January 3, 2024",   camera: "Shot on Film",   lens: "50mm · Ilford HP5" },
   { id: 5,  src: img5,  title: "Quiet Intersection",   location: "Goa",       year: "2023", date: "December 29, 2023", camera: "iPhone 15 Pro",  lens: "Telephoto · 77mm" },
   { id: 6,  src: img6,  title: "Second Exposure",      location: "Bengaluru", year: "2024", date: "February 18, 2024", camera: "Shot on Film",   lens: "28mm · Fuji Superia 400" },
   { id: 7,  src: img7,  title: "Grain & Light",        location: "Bengaluru", year: "2024", date: "February 18, 2024", camera: "Shot on Film",   lens: "28mm · Fuji Superia 400" },

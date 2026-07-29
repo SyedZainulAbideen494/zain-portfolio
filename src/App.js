@@ -644,33 +644,43 @@ export const GalleryViewer = () => null;
 
 /* ─── NOW PLAYING PAGE ───────────────────────────────── */
 const ALBUMS = [
-  { id: 5,  title: "Hanging by a Thread",   artist: "Beckett",         year: "2005", duration: "3:42", genre: "Alternative Rock",  color: "#121212", src: "https://i.scdn.co/image/ab67616d0000b2731298994ccf90493fa88ab8dc",                                                                               track: "Hanging by a Thread",   elapsed: "1:28", total: "3:42" },
-  { id: 6,  title: "Still Loving You",       artist: "Scorpions",       year: "1984", duration: "6:28", genre: "Hard Rock",          color: "#181818", src: "https://upload.wikimedia.org/wikipedia/en/8/83/Scorpions-stilllovingyou1.jpg",                                                                   track: "Still Loving You",       elapsed: "3:11", total: "6:28" },
-  { id: 7,  title: "To the Hellfire",        artist: "Lorna Shore",     year: "2021", duration: "6:10", genre: "Deathcore",          color: "#0b0b0b", src: "https://t2.genius.com/unsafe/516x516/https%3A%2F%2Fimages.genius.com%2F0263ea8b3c1706b9a946edc8ec63f7ad.1000x1000x1.png",                    track: "To the Hellfire",        elapsed: "2:46", total: "6:10" },
-  { id: 8,  title: "Comfortable Liar",       artist: "Chevelle",        year: "2004", duration: "4:15", genre: "Alternative Metal",  color: "#141414", src: "https://t2.genius.com/unsafe/516x516/https%3A%2F%2Fimages.genius.com%2Fecdc4ba4c3d5d4f864a2aa993ee503f8.1000x1000x1.png",                    track: "Comfortable Liar",       elapsed: "1:59", total: "4:15" },
-  { id: 9,  title: "You Give Love a Bad Name",artist: "Bon Jovi",       year: "1986", duration: "3:43", genre: "Hard Rock",          color: "#1a1a1a", src: "https://upload.wikimedia.org/wikipedia/en/b/b4/YouGiveLoveABadName.jpg",                                                                        track: "You Give Love a Bad Name",elapsed: "2:01", total: "3:43" },
-  { id: 10, title: "People = Shit",          artist: "Slipknot",        year: "2001", duration: "3:35", genre: "Nu Metal",           color: "#080808", src: "https://cdn-images.dzcdn.net/images/cover/bd6de90f61e585e94dca0b70a17580c8/500x500-000000-80-0-0.jpg",                                         track: "People = Shit",          elapsed: "1:40", total: "3:35" },
-  { id: 11, title: "This Is the New Shit",   artist: "Marilyn Manson",  year: "2003", duration: "4:20", genre: "Industrial Metal",   color: "#111111", src: "https://i1.sndcdn.com/artworks-9prtR7JiOzzfIcCl-5m6O7g-t500x500.jpg",                                                                          track: "This Is the New Shit",   elapsed: "2:10", total: "4:20" },
-  { id: 12, title: "Antichrist Superstar",   artist: "Marilyn Manson",  year: "1996", duration: "5:14", genre: "Industrial Metal",   color: "#090909", src: "https://upload.wikimedia.org/wikipedia/en/d/d5/Marilyn_Manson_-_Antichrist_Superstar.png",                                                      track: "Antichrist Superstar",   elapsed: "2:38", total: "5:14" },
-  { id: 13, title: "Slither",                artist: "Velvet Revolver", year: "2004", duration: "4:08", genre: "Hard Rock",          color: "#151515", src: "https://cdn-images.dzcdn.net/images/cover/a081cba5029f4972a4d1fd603f5971f0/500x500-000000-80-0-0.jpg",                                         track: "Slither",                elapsed: "1:55", total: "4:08" },
-  { id: 14, title: "...And Then She Bled",   artist: "Suicide Silence", year: "2007", duration: "3:14", genre: "Deathcore",          color: "#050505", src: "https://i.scdn.co/image/ab67616d00001e026d65fd501f4cec18723f3c4b",                                                                               track: "...And Then She Bled",   elapsed: "1:29", total: "3:14" },
-  { id: 15, title: "Good Goodbye",          artist: "Linkin Park",      year: "2017", duration: "3:31", genre: "Alternative Rock",   color: "#101010", src: "https://i.scdn.co/image/ab67616d0000b273145e1cf12538f5666511237d", track: "Good Goodbye",          elapsed: "1:35", total: "3:31" },
+  { id: 18, title: "Stairway to Heaven", artist: "Led Zeppelin", year: "1971", duration: "8:02", genre: "Classic Rock", color: "#181818", src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSj5Lks23N2RgVT9h5aXTTXd2Fqur8LFnIxHcJzHDt5gMkw8fgY0z2x65o&s=10", track: "Stairway to Heaven", elapsed: "4:12", total: "8:02" },
 
-{ id: 16, title: "Talking to Myself",     artist: "Linkin Park",      year: "2017", duration: "3:51", genre: "Alternative Rock",   color: "#111111", src: "https://i.scdn.co/image/ab67616d0000b273145e1cf12538f5666511237d", track: "Talking to Myself",     elapsed: "1:47", total: "3:51" },
+  { id: 10, title: "People = Shit", artist: "Slipknot", year: "2001", duration: "3:35", genre: "Nu Metal", color: "#080808", src: "https://cdn-images.dzcdn.net/images/cover/bd6de90f61e585e94dca0b70a17580c8/500x500-000000-80-0-0.jpg", track: "People = Shit", elapsed: "1:40", total: "3:35" },
 
-{ id: 17, title: "(s)AINT",               artist: "Marilyn Manson",   year: "2003", duration: "3:59", genre: "Industrial Metal",  color: "#090909", src: "https://i1.sndcdn.com/artworks-9prtR7JiOzzfIcCl-5m6O7g-t500x500.jpg", track: "(s)AINT",               elapsed: "1:53", total: "3:59" },
+  { id: 22, title: "Love Is a Bitch", artist: "Two Feet", year: "2018", duration: "3:31", genre: "Alternative", color: "#121212", src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrL00rL4Zz_ww0DAXUGLryEbBfTglZ2UKG2AYORMpO1A&s", track: "Love Is a Bitch", elapsed: "1:44", total: "3:31" },
 
-{ id: 18, title: "Stairway to Heaven",    artist: "Led Zeppelin",     year: "1971", duration: "8:02", genre: "Classic Rock",      color: "#181818", src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSj5Lks23N2RgVT9h5aXTTXd2Fqur8LFnIxHcJzHDt5gMkw8fgY0z2x65o&s=10", track: "Stairway to Heaven",    elapsed: "4:12", total: "8:02" },
+  { id: 6, title: "Still Loving You", artist: "Scorpions", year: "1984", duration: "6:28", genre: "Hard Rock", color: "#181818", src: "https://upload.wikimedia.org/wikipedia/en/8/83/Scorpions-stilllovingyou1.jpg", track: "Still Loving You", elapsed: "3:11", total: "6:28" },
 
-{ id: 19, title: "Sweat",                 artist: "ZAYN",             year: "2024", duration: "3:15", genre: "R&B",               color: "#141414", src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8lpC4YpgQpEoGvoTcUuJD1ByS1f980GyBp38OyKnGWTqjq0kcoIKaFA&s=10", track: "Sweat",                 elapsed: "1:22", total: "3:15" },
+  { id: 20, title: "Take What You Want", artist: "Post Malone", year: "2019", duration: "3:49", genre: "Rock", color: "#0f0f0f", src: "https://i1.sndcdn.com/artworks-AFPIXsQXvTIGyaOF-uZzpdg-t500x500.jpg", track: "Take What You Want", elapsed: "2:03", total: "3:49" },
 
-{ id: 20, title: "Take What You Want",    artist: "Post Malone",      year: "2019", duration: "3:49", genre: "Rock",              color: "#0f0f0f", src: "https://i1.sndcdn.com/artworks-AFPIXsQXvTIGyaOF-uZzpdg-t500x500.jpg", track: "Take What You Want",    elapsed: "2:03", total: "3:49" },
+  { id: 12, title: "Antichrist Superstar", artist: "Marilyn Manson", year: "1996", duration: "5:14", genre: "Industrial Metal", color: "#090909", src: "https://upload.wikimedia.org/wikipedia/en/d/d5/Marilyn_Manson_-_Antichrist_Superstar.png", track: "Antichrist Superstar", elapsed: "2:38", total: "5:14" },
 
-{ id: 21, title: "SAY10",                 artist: "Marilyn Manson",   year: "2017", duration: "4:18", genre: "Industrial Metal",  color: "#080808", src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdSmmlY801Czlm3GiPnDf34HzbQinQKi1yKpyhC-3x-FnI0xuCZ68hcUs&s=10", track: "SAY10",                 elapsed: "2:06", total: "4:18" },
+  { id: 23, title: "Given Up", artist: "Linkin Park", year: "2007", duration: "3:09", genre: "Alternative Metal", color: "#070707", src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgUWGBbEdyl2iD9VWDPITYepHEE7xYwygt0FVI5lRexw&s", track: "Given Up", elapsed: "1:28", total: "3:09" },
 
-{ id: 22, title: "Love Is a Bitch",       artist: "Two Feet",         year: "2018", duration: "3:31", genre: "Alternative",       color: "#121212", src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrL00rL4Zz_ww0DAXUGLryEbBfTglZ2UKG2AYORMpO1A&s", track: "Love Is a Bitch",       elapsed: "1:44", total: "3:31" },
+  { id: 8, title: "Comfortable Liar", artist: "Chevelle", year: "2004", duration: "4:15", genre: "Alternative Metal", color: "#141414", src: "https://t2.genius.com/unsafe/516x516/https%3A%2F%2Fimages.genius.com%2Fecdc4ba4c3d5d4f864a2aa993ee503f8.1000x1000x1.png", track: "Comfortable Liar", elapsed: "1:59", total: "4:15" },
 
-{ id: 23, title: "Given Up",              artist: "Linkin Park",      year: "2007", duration: "3:09", genre: "Alternative Metal", color: "#070707", src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgUWGBbEdyl2iD9VWDPITYepHEE7xYwygt0FVI5lRexw&s", track: "Given Up",              elapsed: "1:28", total: "3:09" },
+  { id: 15, title: "Good Goodbye", artist: "Linkin Park", year: "2017", duration: "3:31", genre: "Alternative Rock", color: "#101010", src: "https://i.scdn.co/image/ab67616d0000b273145e1cf12538f5666511237d", track: "Good Goodbye", elapsed: "1:35", total: "3:31" },
+
+  { id: 5, title: "Hanging by a Thread", artist: "Beckett", year: "2005", duration: "3:42", genre: "Alternative Rock", color: "#121212", src: "https://i.scdn.co/image/ab67616d0000b2731298994ccf90493fa88ab8dc", track: "Hanging by a Thread", elapsed: "1:28", total: "3:42" },
+
+  { id: 21, title: "SAY10", artist: "Marilyn Manson", year: "2017", duration: "4:18", genre: "Industrial Metal", color: "#080808", src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdSmmlY801Czlm3GiPnDf34HzbQinQKi1yKpyhC-3x-FnI0xuCZ68hcUs&s=10", track: "SAY10", elapsed: "2:06", total: "4:18" },
+
+  { id: 13, title: "Slither", artist: "Velvet Revolver", year: "2004", duration: "4:08", genre: "Hard Rock", color: "#151515", src: "https://cdn-images.dzcdn.net/images/cover/a081cba5029f4972a4d1fd603f5971f0/500x500-000000-80-0-0.jpg", track: "Slither", elapsed: "1:55", total: "4:08" },
+
+  { id: 17, title: "(s)AINT", artist: "Marilyn Manson", year: "2003", duration: "3:59", genre: "Industrial Metal", color: "#090909", src: "https://i1.sndcdn.com/artworks-9prtR7JiOzzfIcCl-5m6O7g-t500x500.jpg", track: "(s)AINT", elapsed: "1:53", total: "3:59" },
+
+  { id: 9, title: "You Give Love a Bad Name", artist: "Bon Jovi", year: "1986", duration: "3:43", genre: "Hard Rock", color: "#1a1a1a", src: "https://upload.wikimedia.org/wikipedia/en/b/b4/YouGiveLoveABadName.jpg", track: "You Give Love a Bad Name", elapsed: "2:01", total: "3:43" },
+
+  { id: 19, title: "Sweat", artist: "ZAYN", year: "2024", duration: "3:15", genre: "R&B", color: "#141414", src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8lpC4YpgQpEoGvoTcUuJD1ByS1f980GyBp38OyKnGWTqjq0kcoIKaFA&s=10", track: "Sweat", elapsed: "1:22", total: "3:15" },
+
+  { id: 7, title: "To the Hellfire", artist: "Lorna Shore", year: "2021", duration: "6:10", genre: "Deathcore", color: "#0b0b0b", src: "https://t2.genius.com/unsafe/516x516/https%3A%2F%2Fimages.genius.com%2F0263ea8b3c1706b9a946edc8ec63f7ad.1000x1000x1.png", track: "To the Hellfire", elapsed: "2:46", total: "6:10" },
+
+  { id: 16, title: "Talking to Myself", artist: "Linkin Park", year: "2017", duration: "3:51", genre: "Alternative Rock", color: "#111111", src: "https://i.scdn.co/image/ab67616d0000b273145e1cf12538f5666511237d", track: "Talking to Myself", elapsed: "1:47", total: "3:51" },
+
+  { id: 11, title: "This Is the New Shit", artist: "Marilyn Manson", year: "2003", duration: "4:20", genre: "Industrial Metal", color: "#111111", src: "https://i1.sndcdn.com/artworks-9prtR7JiOzzfIcCl-5m6O7g-t500x500.jpg", track: "This Is the New Shit", elapsed: "2:10", total: "4:20" },
+
+  { id: 14, title: "...And Then She Bled", artist: "Suicide Silence", year: "2007", duration: "3:14", genre: "Deathcore", color: "#050505", src: "https://i.scdn.co/image/ab67616d00001e026d65fd501f4cec18723f3c4b", track: "...And Then She Bled", elapsed: "1:29", total: "3:14" }
 ];
 
 const WaveformRing = memo(({ size = 280, playing = true }) => {

@@ -138,9 +138,9 @@ export default function OneLastThing({ visible }) {
     t(() => setOrbMain(true), 200);
 
     /* ── Scene 1: Thank you — fast */
-    t(() => { setScene(1); setTimeout(() => setTy1(true), 20); }, 200);
+    t(() => { setScene(1); setTimeout(() => setTy1(true), 60); }, 600);
     t(() => setTy2(true), 1000);
-    t(() => { setTy1(false); setTy2(false); setTimeout(() => setScene(null), 200); }, 1400);
+    t(() => { setTy1(false); setTy2(false); setTimeout(() => setScene(null), 500); }, 3200);
 
     /* ── Scene 2: Before you leave — punchy word-by-word */
     const line1 = ["Before", "you", "leave..."];
@@ -203,7 +203,7 @@ export default function OneLastThing({ visible }) {
     transition:    `opacity 0.4s ${EASE_SHARP}`,
   });
 
-  const REVEAL_TEXT = "Fuck Off.";
+  const REVEAL_TEXT = "I can fly planes ☺️.";
 
   return (
     <>

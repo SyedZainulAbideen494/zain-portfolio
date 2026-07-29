@@ -36,7 +36,7 @@ const morseBlip = () => {
     });
   } catch (_) {}
 };
-// low engine drone while the aircraft holds
+// low engine drone while the aircraft is airborne
 const useEngineDrone = (active) => {
   const nodesRef = useRef(null);
   useEffect(() => {
@@ -102,30 +102,53 @@ const inTurn = (t, R, legLen) => {
   return (d >= legLen && d < legLen + turnLen) || d >= legLen * 2 + turnLen;
 };
 
+/* ─── FLIGHT TIMELINE ────────────────────────────────────
+   Real teardrop entry (cross the fix, offset outbound leg,
+   turn back onto the inbound course), two full holds, then
+   a straight departure off the outbound leg — no course
+   reversal at the end, it just flies off. */
+const APPROACH_DURATION = 700;   // straight leg in from off-screen, arriving on the teardrop heading
+const OUTLEG_DURATION   = 550;   // teardrop offset leg past the fix
+const TURN_DURATION     = 1150;  // turn back toward the inbound course
+const BLEND_DURATION    = 400;   // roll out cleanly onto the first outbound leg
+const LAP_DURATION      = 2100;
+const LAPS              = 2;
+const HOLD_DURATION     = LAP_DURATION * LAPS;
+const EXIT_DURATION     = 800;   // departs straight off the outbound leg, no more turning
+
+const T_TURN  = APPROACH_DURATION + OUTLEG_DURATION;
+const T_BLEND = T_TURN + TURN_DURATION;
+const T_HOLD  = T_BLEND + BLEND_DURATION;
+const T_EXIT  = T_HOLD + HOLD_DURATION;
+const T_END   = T_EXIT + EXIT_DURATION;
+
+const deg = (r) => r * (Math.PI / 180);
+const lerp = (a, b, t) => a + (b - a) * t;
+const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
 /* ─── MAIN SEQUENCE ──────────────────────────────────── */
 export default function IntroSequence({ onComplete }) {
-  const [phase, setPhase] = useState(0); // 0 black · 1 VOR on · 2 flying · 3 exit/morph · 4 logo hold · 5 fade
+  const [phase, setPhase] = useState(0); // 0 black · 1 VOR on · 2 flying · 3 fade to home
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
 
-  useEngineDrone(phase >= 2 && phase < 3);
+  useEngineDrone(phase === 2);
 
   useEffect(() => {
     const steps = [
-      [300, 1, () => chime(720, 0.5, 0.03)],   // VOR powers on
-      [900, 2, null],                           // aircraft enters + begins hold
-      [5100, 3, () => chime(980, 0.7, 0.045)],  // exits hold, nav chime
-      [5750, 4, null],                          // logo settles
-      [6350, 5, () => chime(160, 1.2, 0.028)],  // fade tone
+      [300, 1, () => chime(720, 0.5, 0.03)],                 // VOR powers on
+      [900, 2, null],                                         // aircraft enters and begins the entry
+      [900 + T_END, 3, () => chime(160, 1.2, 0.028)],         // clear of the hold, fade to home
     ];
     const timers = steps.map(([t, p, fn]) =>
       setTimeout(() => { setPhase(p); fn && fn(); }, t)
     );
-    const done = setTimeout(() => onComplete && onComplete(), 7000);
+    const done = setTimeout(() => onComplete && onComplete(), 900 + T_END + 900);
     return () => { timers.forEach(clearTimeout); clearTimeout(done); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // quiet VOR identifier, occasional
+  // quiet VOR identifier, occasional, only while it's the active nav aid
   useEffect(() => {
     if (phase < 1 || phase >= 3) return;
     const id = setInterval(() => { if (Math.random() > 0.45) morseBlip(); }, 2600);
@@ -142,17 +165,27 @@ export default function IntroSequence({ onComplete }) {
     const cx = W / 2, cy = H / 2;
     const R = Math.min(W, H) * 0.085;
     const legLen = Math.min(W, H) * 0.2;
+    const rSmall = R * 0.8;
 
     const fix = holdPos(0, cx, cy, R, legLen);
-    const edgeAngle = Math.random() * Math.PI * 2;
-    const entryDist = Math.max(W, H) * 0.75;
-    const entryStart = { x: cx + Math.cos(edgeAngle) * entryDist, y: cy + Math.sin(edgeAngle) * entryDist };
+    const outboundHeading = -90;              // heading of the first outbound leg (north)
+    const teardropHeading = outboundHeading + 30; // -60°, offset outbound heading for the teardrop
+    const dir = (hDeg) => ({ x: Math.cos(deg(hDeg)), y: Math.sin(deg(hDeg)) });
 
-    const ENTRY_DURATION = 1000;
-    const LAP_DURATION = 2600;
-    const LAPS = 1.5;
-    const FLIGHT_DURATION = LAP_DURATION * LAPS;
-    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+    const entryDist = Math.max(W, H) * 0.65;
+    const td = dir(teardropHeading);
+    const entryStart = { x: fix.x - td.x * entryDist, y: fix.y - td.y * entryDist };
+    const dOut = legLen * 0.5;
+    const outLegEnd = { x: fix.x + td.x * dOut, y: fix.y + td.y * dOut };
+
+    // teardrop turn geometry (same right-turn convention as the hold: heading decreases by the sweep)
+    const turnSweep = 200;
+    const h0 = teardropHeading;
+    const center = { x: outLegEnd.x + rSmall * Math.sin(deg(h0)), y: outLegEnd.y - rSmall * Math.cos(deg(h0)) };
+    const a0 = h0 + 90;
+
+    const exitDist = Math.max(W, H) * 0.9;
+    const exitDir = dir(outboundHeading);
 
     const trail = [];
     let start = null;
@@ -162,18 +195,38 @@ export default function IntroSequence({ onComplete }) {
       const elapsed = ts - start;
       let pos, heading, turning = false;
 
-      if (elapsed < ENTRY_DURATION) {
-        const lt = easeOutCubic(elapsed / ENTRY_DURATION);
-        pos = { x: entryStart.x + (fix.x - entryStart.x) * lt, y: entryStart.y + (fix.y - entryStart.y) * lt };
-        const pt = Math.max(0, lt - 0.02);
-        const prev = { x: entryStart.x + (fix.x - entryStart.x) * pt, y: entryStart.y + (fix.y - entryStart.y) * pt };
-        heading = Math.atan2(pos.y - prev.y, pos.x - prev.x) * (180 / Math.PI);
-      } else {
-        const flightElapsed = elapsed - ENTRY_DURATION;
-        const lapT = (flightElapsed % LAP_DURATION) / LAP_DURATION;
+      if (elapsed < APPROACH_DURATION) {
+        const lt = easeOutCubic(elapsed / APPROACH_DURATION);
+        pos = { x: lerp(entryStart.x, fix.x, lt), y: lerp(entryStart.y, fix.y, lt) };
+        heading = teardropHeading;
+      } else if (elapsed < T_TURN) {
+        const lt = (elapsed - APPROACH_DURATION) / OUTLEG_DURATION;
+        pos = { x: lerp(fix.x, outLegEnd.x, lt), y: lerp(fix.y, outLegEnd.y, lt) };
+        heading = teardropHeading;
+      } else if (elapsed < T_BLEND) {
+        const lt = (elapsed - T_TURN) / TURN_DURATION;
+        const a = a0 - lt * turnSweep;
+        pos = { x: center.x + rSmall * Math.cos(deg(a)), y: center.y + rSmall * Math.sin(deg(a)) };
+        heading = h0 - lt * turnSweep;
+        turning = true;
+      } else if (elapsed < T_HOLD) {
+        const lt = easeInOutCubic((elapsed - T_BLEND) / BLEND_DURATION);
+        const turnEndA = a0 - turnSweep, turnEndHeading = h0 - turnSweep;
+        const turnEndPos = { x: center.x + rSmall * Math.cos(deg(turnEndA)), y: center.y + rSmall * Math.sin(deg(turnEndA)) };
+        pos = { x: lerp(turnEndPos.x, fix.x, lt), y: lerp(turnEndPos.y, fix.y, lt) };
+        // shortest angular path from turnEndHeading to outboundHeading(-90)
+        let diff = ((outboundHeading - turnEndHeading + 540) % 360) - 180;
+        heading = turnEndHeading + diff * lt;
+        turning = true;
+      } else if (elapsed < T_EXIT) {
+        const lapT = ((elapsed - T_HOLD) % LAP_DURATION) / LAP_DURATION;
         pos = holdPos(lapT, cx, cy, R, legLen);
         heading = holdHeading(lapT, cx, cy, R, legLen);
         turning = inTurn(lapT, R, legLen);
+      } else {
+        const lt = (elapsed - T_EXIT) / EXIT_DURATION;
+        pos = { x: fix.x + exitDir.x * exitDist * lt, y: fix.y + exitDir.y * exitDist * lt };
+        heading = outboundHeading;
       }
 
       trail.push({ x: pos.x, y: pos.y, age: 0 });
@@ -207,7 +260,7 @@ export default function IntroSequence({ onComplete }) {
       ctx.fill();
       ctx.restore();
 
-      if (elapsed < ENTRY_DURATION + FLIGHT_DURATION) {
+      if (elapsed < T_END) {
         rafRef.current = requestAnimationFrame(draw);
       }
     };
@@ -215,17 +268,14 @@ export default function IntroSequence({ onComplete }) {
     return () => cancelAnimationFrame(rafRef.current);
   }, [phase]);
 
-  const exiting = phase >= 3;
-  const logoSettled = phase >= 4;
-  const dissolving = phase >= 5;
+  const dissolving = phase >= 3;
 
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 9999, background: "#000",
       display: "flex", alignItems: "center", justifyContent: "center",
       opacity: dissolving ? 0 : 1,
-      transform: exiting ? "scale(1.06)" : "scale(1)",
-      transition: "opacity 900ms cubic-bezier(0.16,1,0.3,1) 300ms, transform 1400ms cubic-bezier(0.16,1,0.3,1)",
+      transition: "opacity 900ms cubic-bezier(0.16,1,0.3,1) 200ms",
       pointerEvents: dissolving ? "none" : "auto",
       overflow: "hidden",
     }}>
@@ -246,7 +296,7 @@ export default function IntroSequence({ onComplete }) {
 
       {/* flight trail + aircraft */}
       <canvas ref={canvasRef} style={{
-        position: "fixed", inset: 0, opacity: exiting ? 0 : 1,
+        position: "fixed", inset: 0, opacity: phase >= 3 ? 0 : 1,
         transition: "opacity 700ms ease",
       }} />
 
@@ -268,22 +318,6 @@ export default function IntroSequence({ onComplete }) {
           animation: phase >= 1 && phase < 3 ? "vorBreathe 2.6s ease-in-out infinite" : "none",
           transition: "opacity 600ms ease",
         }} />
-      </div>
-
-      {/* logo mark — trail converges here as the aircraft exits the hold */}
-      <div style={{
-        position: "relative",
-        opacity: exiting ? 1 : 0,
-        transform: `scale(${logoSettled ? 1.05 : exiting ? 0.85 : 0.7})`,
-        transition: "opacity 800ms cubic-bezier(0.16,1,0.3,1), transform 900ms cubic-bezier(0.34,1.56,0.64,1)",
-      }}>
-        <svg width="86" height="86" viewBox="0 0 86 86">
-          <circle cx="43" cy="43" r="30" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2"
-            style={{ filter: "drop-shadow(0 0 8px rgba(255,255,255,0.3))" }} />
-          <path d="M43,20 L50,50 L43,44 L36,50 Z" fill="rgba(255,255,255,0.95)"
-            style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,0.5))" }} />
-          <circle cx="43" cy="43" r="2.4" fill="rgba(255,255,255,0.95)" />
-        </svg>
       </div>
     </div>
   );

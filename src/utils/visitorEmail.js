@@ -18,7 +18,7 @@ export async function sendVisitorEmail() {
     );
 
     await emailjs.send(
-      "service_pek4tcv",
+      "service_zijppum",
       "template_bfaicga",
       {
         time: new Date().toLocaleString(),

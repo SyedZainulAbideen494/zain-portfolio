@@ -28,7 +28,7 @@ export async function sendVisitorEmail() {
 
     await emailjs.send(
       "service_pek4tcv",
-      "service_pek4tcv",
+      "template_bfaicga",
       {
         time: new Date().toLocaleString(),
 

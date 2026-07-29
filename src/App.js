@@ -809,14 +809,24 @@ const NowPlayingPage = memo(({ visible }) => {
             {/* Left arrow — mobile only */}
             <button
               onClick={() => scrollBy(-1)}
-              style={{ display: mobile() ? "flex" : "none", position: "absolute", left: 8, zIndex: 20, alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.14)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", cursor: "pointer", color: "rgba(255,255,255,0.6)", fontSize: 16, flexShrink: 0 }}
+              style={{ display: "flex", position: "absolute", left: 8, zIndex: 20, alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.14)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", cursor: "pointer", color: "rgba(255,255,255,0.6)", fontSize: 16, flexShrink: 0 }}
             >‹</button>
 
-            <div
-              ref={scrollRef}
-              className="album-scroll-strip"
-              style={{ display: "flex", gap: 12, alignItems: "center", overflowX: mobile() ? "auto" : "visible", flexWrap: mobile() ? "nowrap" : "nowrap", maxWidth: mobile() ? "calc(100vw - 80px)" : "none", padding: mobile() ? "8px 16px" : "0", scrollSnapType: mobile() ? "x mandatory" : "none" }}
-            >
+      <div
+  ref={scrollRef}
+  className="album-scroll-strip"
+  style={{
+    display: "flex",
+    gap: 12,
+    alignItems: "center",
+    overflowX: "auto",          // instead of mobile() ? "auto" : "visible"
+    flexWrap: "nowrap",
+    maxWidth: "min(1000px, calc(100vw - 120px))",
+    padding: "8px 16px",
+    scrollSnapType: "x proximity",
+    scrollbarWidth: "none",
+  }}
+>
               {ALBUMS.map(album => (
                 <div key={album.id} style={{ scrollSnapAlign: mobile() ? "center" : "none", flexShrink: 0 }}>
                   <AlbumCard album={album} isCurrent={album.id === currentAlbum.id} onSelect={(a) => { setCurrentAlbum(a); setFlipped(false); setProgress(0.1); }} />
@@ -827,7 +837,7 @@ const NowPlayingPage = memo(({ visible }) => {
             {/* Right arrow — mobile only */}
             <button
               onClick={() => scrollBy(1)}
-              style={{ display: mobile() ? "flex" : "none", position: "absolute", right: 8, zIndex: 20, alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.14)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", cursor: "pointer", color: "rgba(255,255,255,0.6)", fontSize: 16, flexShrink: 0 }}
+              style={{ display: "flex", position: "absolute", right: 8, zIndex: 20, alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.14)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", cursor: "pointer", color: "rgba(255,255,255,0.6)", fontSize: 16, flexShrink: 0 }}
             >›</button>
           </div>
         </div>

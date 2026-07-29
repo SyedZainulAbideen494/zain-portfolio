@@ -138,9 +138,9 @@ export default function OneLastThing({ visible }) {
     t(() => setOrbMain(true), 200);
 
     /* ── Scene 1: Thank you — fast */
-    t(() => { setScene(1); setTimeout(() => setTy1(true), 60); }, 600);
+    t(() => { setScene(1); setTimeout(() => setTy1(true), 20); }, 200);
     t(() => setTy2(true), 1000);
-    t(() => { setTy1(false); setTy2(false); setTimeout(() => setScene(null), 500); }, 3200);
+    t(() => { setTy1(false); setTy2(false); setTimeout(() => setScene(null), 200); }, 1400);
 
     /* ── Scene 2: Before you leave — punchy word-by-word */
     const line1 = ["Before", "you", "leave..."];

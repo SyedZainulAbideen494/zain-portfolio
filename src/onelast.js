@@ -428,7 +428,7 @@ export default function OneLastThing({ visible }) {
     transition:    `opacity 0.4s ${EASE_SHARP}`,
   });
 
-  const REVEAL_TEXT = "Never mind, you can leave ☺️.";
+  const REVEAL_TEXT = "I can fly planes ☺️.";
 
   return (
     <>

@@ -103,6 +103,23 @@ const playClick = () => {
   } catch (_) {}
 };
 
+const playHover = () => {
+  try {
+    const ac = getAudio();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(660, ac.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ac.currentTime + 0.18);
+    gain.gain.setValueAtTime(0, ac.currentTime);
+    gain.gain.linearRampToValueAtTime(0.025, ac.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.3);
+    osc.connect(gain);
+    routeThroughRoom(ac, gain, { dry: 0.85, wet: 0.15, pan: 0 });
+    osc.start(ac.currentTime); osc.stop(ac.currentTime + 0.32);
+  } catch (_) {}
+};
+
 // Extremely quiet drifting pad + noise floor — never demands attention,
 // just gives the silence some texture. Started once on `visible`, stopped on exit.
 const startAmbience = () => {
@@ -161,6 +178,19 @@ const getGrainDataURL = () => {
   return _grainURL;
 };
 
+/* Faint drifting chess pieces for the showcase background — pure
+   decoration, kept at very low opacity so they never compete with
+   the content. White (hollow) glyphs read better than filled ones
+   at low opacity against the dark background. */
+const FLOATING_PIECES = [
+  { glyph: "♔", top: "14%",  left: "10%", size: 92,  dur: 46, delay: 0,  drift: "A", op: 0.05 },
+  { glyph: "♕", top: "68%",  left: "8%",  size: 76,  dur: 52, delay: 4,  drift: "B", op: 0.04 },
+  { glyph: "♘", top: "20%",  left: "84%", size: 88,  dur: 58, delay: 2,  drift: "B", op: 0.045 },
+  { glyph: "♗", top: "72%",  left: "88%", size: 70,  dur: 50, delay: 6,  drift: "A", op: 0.035 },
+  { glyph: "♘", top: "46%",  left: "50%", size: 130, dur: 64, delay: 1,  drift: "A", op: 0.03 },
+  { glyph: "♕", top: "8%",   left: "48%", size: 64,  dur: 44, delay: 8,  drift: "B", op: 0.04 },
+];
+
 /* ─── Component ──────────────────────────────────────────── */
 export default function OneLastThing({ visible }) {
   const canvasRef   = useRef(null);
@@ -171,19 +201,30 @@ export default function OneLastThing({ visible }) {
   const orbPos2Ref  = useRef(null);
   const stopAmbienceRef = useRef(null);
   const runningRef  = useRef(true);                  // used to pause rAF when tab hidden
+  const btnRef      = useRef(null);
 
   const [scene,        setScene]        = useState(null);
   const [ty1,          setTy1]          = useState(false);
   const [ty2,          setTy2]          = useState(false);
   const [wordCount,    setWordCount]    = useState(0);
-  const [revealIn,     setRevealIn]     = useState(false);
-  const [revealChars,  setRevealChars]  = useState(0);
   const [glitch,       setGlitch]       = useState(false);
   const [footerIn,     setFooterIn]     = useState(false);
   const [orbMain,      setOrbMain]      = useState(false);
   const [orbReveal,    setOrbReveal]    = useState(false);
   const [fadeOut,      setFadeOut]      = useState(false);
   const [scanline,     setScanline]     = useState(false);
+
+  /* ── Showcase reveal stages (scene 3) ── */
+  const [labelIn,      setLabelIn]      = useState(false);
+  const [headlineIn,   setHeadlineIn]   = useState(false);
+  const [descIn,       setDescIn]       = useState(false);
+  const [buttonIn,     setButtonIn]     = useState(false);
+
+  /* ── Button magnetic / shine interaction state ── */
+  const [btnHover,     setBtnHover]     = useState(false);
+  const [btnPress,     setBtnPress]     = useState(false);
+  const [btnGlow,      setBtnGlow]      = useState({ x: 50, y: 50 });
+  const [magnet,       setMagnet]       = useState({ x: 0, y: 0 }); // pull offset for the little orbiting motes
 
   /* ── Mouse tracking (ref-only, no re-renders) for particle parallax
          and the orb's slow magnetic drift. ── */
@@ -265,14 +306,34 @@ export default function OneLastThing({ visible }) {
 
       const mx = mouseRef.current.x, my = mouseRef.current.y;
 
+      // When the CTA button is hovered, nearby stars get a very gentle pull
+      // toward its screen position — a cheap but convincing "magnetic" feel
+      // without having to rewire the whole particle system.
+      let pullX = null, pullY = null;
+      if (btnRef.current) {
+        const r = btnRef.current.getBoundingClientRect();
+        pullX = r.left + r.width / 2;
+        pullY = r.top + r.height / 2;
+      }
+
       stars.forEach(p => {
         p.x += p.vx; p.y += p.vy;
         if (p.x < -5) p.x = W + 5; if (p.x > W + 5) p.x = -5;
         if (p.y < -5) p.y = H + 5; if (p.y > H + 5) p.y = -5;
 
         const twinkle = 0.55 + 0.45 * Math.sin(t * p.twinkleSpeed + p.phase);
-        const px = p.x + (REDUCED ? 0 : mx * p.parallax);
-        const py = p.y + (REDUCED ? 0 : my * p.parallax);
+        let px = p.x + (REDUCED ? 0 : mx * p.parallax);
+        let py = p.y + (REDUCED ? 0 : my * p.parallax);
+
+        if (btnRef.current && pullX !== null) {
+          const dx = pullX - px, dy = pullY - py;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 260 && dist > 0.001) {
+            const pull = (1 - dist / 260) * 6; // small nudge, never a snap
+            px += (dx / dist) * pull;
+            py += (dy / dist) * pull;
+          }
+        }
 
         ctx.beginPath();
         ctx.arc(px, py, p.r, 0, Math.PI * 2);
@@ -322,21 +383,22 @@ export default function OneLastThing({ visible }) {
     };
   }, [visible]);
 
-  /* ── Master timeline ── RETIMED to get to the hook much faster.
-         The old cut held on "Thank you for visiting" for ~2.6s before
-         anything else happened — long enough that people bounced before
-         ever seeing "before you leave, one last thing." Everything below
-         is compressed (roughly 2x tighter) while keeping every beat and
-         every line of dialogue exactly the same. Word/char reveal speeds
-         are also upped so the text itself reads faster, not just the gaps. ── */
+  /* ── Master timeline ──
+         Scenes 1 & 2 are untouched. Scene 3 is now the project showcase:
+         it staggers in label -> headline -> description -> button, then
+         stays on screen (no auto fade-to-black) so the CTA is always
+         reachable — a portfolio reveal should never disappear before
+         someone gets the chance to click it. ── */
   useEffect(() => {
     timers.current.forEach(clearTimeout);
     timers.current = [];
     if (!visible) {
       setScene(null); setTy1(false); setTy2(false); setWordCount(0);
-      setRevealIn(false); setRevealChars(0); setGlitch(false);
+      setGlitch(false);
       setFooterIn(false); setOrbMain(false); setOrbReveal(false);
       setFadeOut(false); setScanline(false);
+      setLabelIn(false); setHeadlineIn(false); setDescIn(false); setButtonIn(false);
+      setBtnHover(false); setBtnPress(false);
       if (stopAmbienceRef.current) { stopAmbienceRef.current(); stopAmbienceRef.current = null; }
       return;
     }
@@ -349,16 +411,15 @@ export default function OneLastThing({ visible }) {
     /* orb in */
     t(() => setOrbMain(true), 150);
 
-    /* ── Scene 1: Thank you — now much quicker on-screen (was 2.6s hold,
-           now ~1.3s) so the hook line arrives before attention drifts ── */
+    /* ── Scene 1: Thank you ── */
     t(() => { setScene(1); setTimeout(() => setTy1(true), 40); }, 300);
     t(() => setTy2(true), 650);
     t(() => { setTy1(false); setTy2(false); setTimeout(() => setScene(null), 350); }, 1900);
 
-    /* ── Scene 2: Before you leave — punchy word-by-word, faster cadence ── */
+    /* ── Scene 2: Before you leave ── */
     const line1 = ["Before", "you", "leave..."];
     const line2 = ["one", "last", "thing."];
-    const WORD_DELAY = 130; // was 180 — words land quicker, still readable
+    const WORD_DELAY = 130;
     t(() => {
       setScene(2);
       playSynth();
@@ -373,42 +434,17 @@ export default function OneLastThing({ visible }) {
     }, 2300);
     t(() => { setWordCount(0); setScene(null); }, 4800);
 
-    /* ── Scene 3: Big reveal — character-by-character, faster typing speed,
-           still with a short beat of anticipation (orb bloom + hush)
-           just before the text begins. ── */
-    const REVEAL_TEXT = "Never mind, you can leave ☺️.";
-    const CHAR_START_DELAY = 80;  // was 120
-    const CHAR_DELAY = 40;        // was 55 — text types noticeably faster
-    t(() => {
-      setOrbReveal(true);   // bloom starts slightly before the text (anticipation)
-      setScanline(true);
-    }, 4800);
-    t(() => {
-      setScene(3);
-      playBass();
-      setTimeout(() => setRevealIn(true), 80);
-      REVEAL_TEXT.split("").forEach((_, i) => {
-        setTimeout(() => {
-          setRevealChars(i + 1);
-          if (i % 3 === 0) playClick();
-        }, CHAR_START_DELAY + i * CHAR_DELAY);
-      });
-    }, 5100);
+    /* ── Scene 3: Chess showcase — orb blooms, scene mounts, then the
+           four beats stagger in with an Apple-keynote cadence. ── */
+    t(() => { setOrbReveal(true); setScanline(true); }, 4800);
+    t(() => { setScene(3); playBass(); }, 5100);
+    t(() => setLabelIn(true),    5450);
+    t(() => setHeadlineIn(true), 6000);
+    t(() => { setDescIn(true); playClick(); }, 6750);
+    t(() => setButtonIn(true),   7500);
 
-    /* glitch flash at the end of reveal */
-    t(() => { setGlitch(true); setTimeout(() => setGlitch(false), 180); },
-      5100 + CHAR_START_DELAY + REVEAL_TEXT.length * CHAR_DELAY + 200);
-
-    /* ── Footer — arrives once the reveal has had a moment to breathe ── */
-    t(() => setFooterIn(true), 8200);
-
-    /* ── Fade out — total runtime now ~12.5s instead of ~22s ── */
-    t(() => {
-      setFooterIn(false); setRevealIn(false); setScanline(false);
-      setTimeout(() => {
-        setOrbReveal(false); setOrbMain(false); setFadeOut(true);
-      }, 400);
-    }, 11700);
+    /* ── Footer — arrives once the CTA has had a moment to breathe ── */
+    t(() => setFooterIn(true), 9200);
 
     return () => {
       timers.current.forEach(clearTimeout);
@@ -428,7 +464,13 @@ export default function OneLastThing({ visible }) {
     transition:    `opacity 0.4s ${EASE_SHARP}`,
   });
 
-  const REVEAL_TEXT = "I can fly planes ☺️.";
+  const handleBtnMove = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const px = ((e.clientX - r.left) / r.width) * 100;
+    const py = ((e.clientY - r.top) / r.height) * 100;
+    setBtnGlow({ x: px, y: py });
+    setMagnet({ x: (px - 50) / 50, y: (py - 50) / 50 });
+  };
 
   return (
     <>
@@ -465,10 +507,6 @@ export default function OneLastThing({ visible }) {
           70%  { opacity:1; transform: translateY(-2px) scale(1.01) skewY(0);      filter: blur(0);   }
           100% { opacity:1; transform: translateY(0)     scale(1)    skewY(0);      filter: blur(0);   }
         }
-        @keyframes oltCharIn {
-          from { opacity:0; transform: translateY(-8px); filter: blur(4px); }
-          to   { opacity:1; transform: translateY(0);    filter: blur(0);   }
-        }
         /* micro settle applied briefly after the whole word/line has revealed */
         @keyframes oltMicroSettle {
           0%   { letter-spacing: 0.14em; }
@@ -492,6 +530,116 @@ export default function OneLastThing({ visible }) {
         @keyframes oltGrainShift {
           0%   { background-position: 0 0; }
           100% { background-position: 128px 128px; }
+        }
+
+        /* ── Showcase entrance beats ── */
+        @keyframes oltLabelIn {
+          0%   { opacity: 0; transform: translateY(10px); filter: blur(6px); }
+          100% { opacity: 1; transform: translateY(0);    filter: blur(0);   }
+        }
+        @keyframes oltHeadlineIn {
+          0%   { opacity: 0; transform: translateY(38px) scale(0.97); filter: blur(12px); }
+          65%  { filter: blur(0); }
+          100% { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0);    }
+        }
+        @keyframes oltDescIn {
+          0%   { opacity: 0; transform: translateY(14px); filter: blur(5px); }
+          100% { opacity: 1; transform: translateY(0);    filter: blur(0);   }
+        }
+        @keyframes oltButtonIn {
+          0%   { opacity: 0; transform: translateY(22px) scale(0.88); }
+          70%  { opacity: 1; transform: translateY(-3px) scale(1.02); }
+          100% { opacity: 1; transform: translateY(0)    scale(1);    }
+        }
+        @keyframes oltKnightWobble {
+          0%, 100% { transform: rotate(-4deg); }
+          50%      { transform: rotate(4deg);  }
+        }
+        @keyframes oltSpotlightPulse {
+          0%, 100% { opacity: 0.55; transform: scale(1);    }
+          50%      { opacity: 0.8;  transform: scale(1.05); }
+        }
+
+        /* ── Floating chess pieces ── */
+        @keyframes oltPieceFloatA {
+          0%   { transform: translate(0px, 0px) rotate(-4deg); }
+          50%  { transform: translate(22px, -26px) rotate(3deg); }
+          100% { transform: translate(0px, 0px) rotate(-4deg); }
+        }
+        @keyframes oltPieceFloatB {
+          0%   { transform: translate(0px, 0px) rotate(4deg); }
+          50%  { transform: translate(-20px, 24px) rotate(-3deg); }
+          100% { transform: translate(0px, 0px) rotate(4deg); }
+        }
+
+        /* ── Premium glass CTA button ── */
+        .olt-chess-btn {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          height: 58px;
+          padding: 0 44px;
+          border-radius: 999px;
+          text-decoration: none;
+          font-family: 'SF Pro Display','Helvetica Neue',sans-serif;
+          font-size: clamp(14px, 2.4vw, 17px);
+          font-weight: 400;
+          letter-spacing: 0.02em;
+          color: #fff;
+          cursor: pointer;
+          overflow: hidden;
+          isolation: isolate;
+          background:
+            radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,120,190,0.28), rgba(150,110,255,0.14) 45%, rgba(255,255,255,0.04) 75%),
+            rgba(255,255,255,0.06);
+          backdrop-filter: blur(18px) saturate(140%);
+          -webkit-backdrop-filter: blur(18px) saturate(140%);
+          border: 1px solid rgba(255,255,255,0.16);
+          box-shadow:
+            0 0 0 1px rgba(255,255,255,0.03) inset,
+            0 8px 30px rgba(180,90,220,0.14),
+            0 2px 12px rgba(0,0,0,0.35);
+          transition: transform 0.45s ${EASE}, box-shadow 0.45s ${EASE}, border-color 0.45s ${EASE};
+        }
+        .olt-chess-btn:hover {
+          transform: translateY(-4px) scale(1.03);
+          border-color: rgba(255,255,255,0.28);
+          box-shadow:
+            0 0 0 1px rgba(255,255,255,0.05) inset,
+            0 16px 46px rgba(200,110,240,0.30),
+            0 6px 20px rgba(90,60,180,0.28);
+        }
+        .olt-chess-btn:active {
+          transform: translateY(-1px) scale(0.975);
+          transition: transform 0.15s ${EASE_SHARP};
+        }
+        .olt-chess-btn-shine {
+          position: absolute;
+          top: 0; left: -60%;
+          width: 45%; height: 100%;
+          background: linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent);
+          transform: skewX(-18deg);
+          pointer-events: none;
+        }
+        .olt-chess-btn:hover .olt-chess-btn-shine {
+          animation: oltShine 1.1s ${EASE_SHARP};
+        }
+        @keyframes oltShine {
+          from { left: -60%; }
+          to   { left: 130%; }
+        }
+        .olt-chess-btn-mote {
+          position: absolute;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,150,200,0.3) 60%, transparent 75%);
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.4s ${EASE}, transform 0.5s ${EASE};
+        }
+        .olt-chess-btn:hover ~ .olt-chess-btn-mote,
+        .olt-chess-btn-wrap:hover .olt-chess-btn-mote {
+          opacity: 0.7;
         }
       `}</style>
 
@@ -535,6 +683,17 @@ export default function OneLastThing({ visible }) {
             filter: "blur(48px)",
             animation: REDUCED ? "none" : "oltFogDriftB 65s ease-in-out infinite alternate",
           }} />
+
+          {/* ── Faint floating chess pieces — pure atmosphere for the showcase, very low opacity ── */}
+          {FLOATING_PIECES.map((p, i) => (
+            <div key={i} style={{
+              position: "absolute", top: p.top, left: p.left, zIndex: 1, pointerEvents: "none",
+              fontSize: p.size, color: "rgba(255,255,255,1)", opacity: scene === 3 ? p.op : 0,
+              fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+              transition: `opacity 2s ${EASE}`,
+              animation: REDUCED ? "none" : `${p.drift === "A" ? "oltPieceFloatA" : "oltPieceFloatB"} ${p.dur}s ease-in-out ${p.delay}s infinite`,
+            }}>{p.glyph}</div>
+          ))}
 
           {/* scanline overlay — only during scene 3 */}
           <div style={{
@@ -603,7 +762,7 @@ export default function OneLastThing({ visible }) {
                   fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
                   fontSize: "clamp(26px,7vw,52px)", fontWeight: 200,
                   color: "rgba(255,255,255,0.92)", letterSpacing: "0.1em", lineHeight: 1.5,
-                  textShadow: show ? "0 0 24px rgba(255,255,255,0.12)" : "none", // gentle glow, Apple-keynote style
+                  textShadow: show ? "0 0 24px rgba(255,255,255,0.12)" : "none",
                   opacity:    show ? 1 : 0,
                   transform:  show ? "translateY(0)" : "translateY(8px) scale(0.985)",
                   filter:     show ? "blur(0)" : "blur(5px)",
@@ -616,7 +775,6 @@ export default function OneLastThing({ visible }) {
           {/* ── Scene 2: Before you leave ── */}
           <div style={sceneStyle(2)}>
             <div style={{ textAlign: "center", fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif" }}>
-              {/* line 1 */}
               <div style={{ marginBottom: "clamp(8px,1.5vw,18px)" }}>
                 {["Before","you","leave..."].map((word, i) => (
                   <span key={i} style={{
@@ -629,7 +787,6 @@ export default function OneLastThing({ visible }) {
                   }}>{word}</span>
                 ))}
               </div>
-              {/* line 2 */}
               <div>
                 {["one","last","thing."].map((word, i) => (
                   <span key={i} style={{
@@ -648,70 +805,131 @@ export default function OneLastThing({ visible }) {
             </div>
           </div>
 
-          {/* ── Scene 3: Reveal ── */}
+          {/* ── Scene 3: Chess AI showcase — the flagship-project reveal ── */}
           <div style={sceneStyle(3)}>
-            {/* maxWidth + centered text lets this wrap gracefully on phones
-                instead of the old fixed nowrap line, which overflowed off
-                the edge of any screen narrower than ~1000px. */}
-            <div style={{ position: "relative", maxWidth: "min(94vw, 1100px)", textAlign: "center" }}>
-              {/* main text — character by character, with an extremely subtle
-                  constant chromatic-aberration fringe via dual text-shadow.
-                  fontSize floor lowered + wrap enabled so long sentences never
-                  clip on small screens; weight bumped from 100->200 and
-                  contrast/glow increased for legibility against the grain/vignette. */}
+            {/* radial spotlight behind the content, pulsing very gently */}
+            <div style={{
+              position: "absolute", top: "50%", left: "50%",
+              width: "min(1000px, 110vw)", height: "min(700px, 90vh)",
+              marginTop: "min(-350px, -45vh)", marginLeft: "min(-500px, -55vw)",
+              background: "radial-gradient(ellipse at center, rgba(190,110,255,0.10) 0%, rgba(255,90,160,0.06) 35%, transparent 70%)",
+              filter: "blur(10px)",
+              opacity: headlineIn ? 1 : 0,
+              animation: headlineIn && !REDUCED ? "oltSpotlightPulse 6s ease-in-out infinite" : "none",
+              transition: `opacity 1.6s ${EASE}`,
+              pointerEvents: "none",
+              zIndex: 0,
+            }} />
+
+            <div style={{ position: "relative", zIndex: 1, textAlign: "center", maxWidth: "min(92vw, 720px)" }}>
+
+              {/* eyebrow label */}
               <div style={{
                 fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
-                fontSize: "clamp(30px,7.5vw,120px)", fontWeight: 200,
-                letterSpacing: "-0.02em", color: "#fff", lineHeight: 1.15,
-                userSelect: "none", whiteSpace: "normal", wordBreak: "keep-all",
-                opacity: revealIn ? 1 : 0,
-                textShadow: revealIn
-                  ? "-0.6px 0 rgba(255,60,90,0.35), 0.6px 0 rgba(70,220,255,0.3), 0 0 46px rgba(255,255,255,0.12)"
-                  : "none",
-                transition: `opacity 0.4s ${EASE}, text-shadow 0.6s ${EASE}`,
+                fontSize: "clamp(11px,2.2vw,13px)", fontWeight: 400,
+                letterSpacing: "0.22em", textTransform: "uppercase",
+                color: "rgba(255,255,255,0.5)",
+                marginBottom: "clamp(18px,3vw,26px)",
+                opacity: labelIn ? 1 : 0,
+                animation: labelIn ? `oltLabelIn 0.7s ${EASE} both` : "none",
               }}>
-                {REVEAL_TEXT.split("").map((char, i) => (
-                  <span key={i} style={{
-                    display: "inline-block",
-                    opacity:    revealChars > i ? 1 : 0,
-                    transform:  revealChars > i ? "translateY(0) scale(1)" : "translateY(-12px) scale(0.9)",
-                    filter:     revealChars > i ? "blur(0)" : "blur(3px)",
-                    transition: `opacity 0.22s ${EASE_OVERSHOOT}, transform 0.22s ${EASE_OVERSHOOT}, filter 0.22s ${EASE}`,
-                    whiteSpace: char === " " ? "pre" : "normal",
-                  }}>{char}</span>
-                ))}
-                {/* blinking cursor */}
-                <span style={{
-                  display: "inline-block",
-                  width: "2px", height: "0.85em",
-                  background: "rgba(255,255,255,0.7)",
-                  marginLeft: "4px",
-                  verticalAlign: "middle",
-                  animation: "oltCursor 0.8s step-end infinite",
-                  opacity: revealChars < REVEAL_TEXT.length ? 1 : (footerIn ? 0 : 1),
-                  transition: "opacity 0.4s",
-                }} />
+                ♟ Built from scratch by Zain
               </div>
 
-              {/* glitch overlay — matches the main text's wrap/size so it
-                  lines up instead of spilling wider than its parent */}
-              {glitch && (
-                <div style={{
-                  position: "absolute", inset: 0,
+              {/* headline, with a slowly wobbling knight glyph beside it */}
+              <div style={{
+                display: "flex", alignItems: "center", justifyContent: "center",
+                gap: "clamp(10px, 2vw, 18px)",
+                opacity: headlineIn ? 1 : 0,
+                animation: headlineIn ? `oltHeadlineIn 0.85s ${EASE} both` : "none",
+              }}>
+                <span style={{
+                  display: "inline-block",
+                  fontSize: "clamp(24px,5vw,40px)",
+                  color: "rgba(255,255,255,0.5)",
+                  transformOrigin: "50% 80%",
+                  animation: REDUCED ? "none" : "oltKnightWobble 4.5s ease-in-out infinite",
+                }}>♞</span>
+                <h1 style={{
+                  margin: 0,
                   fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
-                  fontSize: "clamp(30px,7.5vw,120px)", fontWeight: 200,
-                  letterSpacing: "-0.02em", color: "rgba(255,77,148,0.8)", lineHeight: 1.15,
-                  whiteSpace: "normal", wordBreak: "keep-all",
-                  animation: `oltGlitch 0.18s steps(3) both`,
-                  pointerEvents: "none",
-                }}>{REVEAL_TEXT}</div>
-              )}
+                  fontSize: "clamp(32px,7.5vw,64px)", fontWeight: 200,
+                  letterSpacing: "-0.01em", lineHeight: 1.08,
+                  color: "#fff",
+                  textShadow: "0 0 40px rgba(255,255,255,0.14)",
+                }}>Challenge My Chess AI</h1>
+              </div>
+
+              {/* description */}
+              <p style={{
+                margin: "clamp(18px,3vw,26px) auto 0",
+                maxWidth: "540px",
+                fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+                fontSize: "clamp(14px,2.6vw,18px)", fontWeight: 300,
+                lineHeight: 1.6, letterSpacing: "0.01em",
+                color: "rgba(255,255,255,0.55)",
+                opacity: descIn ? 1 : 0,
+                animation: descIn ? `oltDescIn 0.7s ${EASE} both` : "none",
+              }}>
+                Every move, evaluation, and decision is powered by an AI engine I built myself. Think you can beat it?
+              </p>
+
+              {/* CTA button + tiny orbiting motes for the magnetic-pull effect */}
+              <div className="olt-chess-btn-wrap" style={{
+                position: "relative",
+                marginTop: "clamp(30px,4.5vw,42px)",
+                display: "inline-flex", flexDirection: "column", alignItems: "center",
+                opacity: buttonIn ? 1 : 0,
+                animation: buttonIn ? `oltButtonIn 0.6s ${EASE_OVERSHOOT} both` : "none",
+              }}>
+                {[...Array(6)].map((_, i) => {
+                  const angle = (i / 6) * Math.PI * 2;
+                  const baseR = 78;
+                  const bx = Math.cos(angle) * baseR;
+                  const by = Math.sin(angle) * baseR * 0.5;
+                  return (
+                    <span key={i} className="olt-chess-btn-mote" style={{
+                      width: 4, height: 4,
+                      top: `calc(50% + ${by}px)`, left: `calc(50% + ${bx}px)`,
+                      transform: btnHover
+                        ? `translate(${-magnet.x * 16}px, ${-magnet.y * 10}px)`
+                        : "translate(0,0)",
+                    }} />
+                  );
+                })}
+
+                <a
+                  ref={btnRef}
+                  href="https://chess-game-with-ai-by-zain.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="olt-chess-btn"
+                  style={{ "--mx": `${btnGlow.x}%`, "--my": `${btnGlow.y}%` }}
+                  onMouseEnter={() => { setBtnHover(true); playHover(); }}
+                  onMouseLeave={() => { setBtnHover(false); setBtnGlow({ x: 50, y: 50 }); setMagnet({ x: 0, y: 0 }); }}
+                  onMouseMove={handleBtnMove}
+                  onMouseDown={() => setBtnPress(true)}
+                  onMouseUp={() => setBtnPress(false)}
+                  onClick={() => playClick()}
+                >
+                  <span className="olt-chess-btn-shine" />
+                  <span style={{ position: "relative", zIndex: 1 }}>Play Against My AI</span>
+                </a>
+
+                <div style={{
+                  marginTop: "16px",
+                  fontFamily: "'SF Pro Display','Helvetica Neue',sans-serif",
+                  fontSize: "clamp(11px,2vw,12.5px)", fontWeight: 300, fontStyle: "italic",
+                  letterSpacing: "0.03em",
+                  color: "rgba(255,255,255,0.32)",
+                }}>
+                  "Good luck. You'll need it."
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* ── Footer — letter-spacing now scales down on narrow viewports
-                 (clamp with a vw component) and wrapping is allowed with a
-                 safe max-width, so it can never run off a phone screen. ── */}
+          {/* ── Footer ── */}
           <div style={{
             position: "absolute", bottom: "clamp(24px,4vw,48px)", left: "50%",
             transform: "translateX(-50%)",
@@ -728,17 +946,13 @@ export default function OneLastThing({ visible }) {
 
         </div>{/* end camera-drift wrapper */}
 
-        {/* ── Vignette — darkens edges for cinematic focus toward center.
-               Pulled in slightly (45%/0.48 vs 40%/0.55) so it frames the
-               shot without ever dimming the text itself, which sits centered. ── */}
+        {/* ── Vignette ── */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 30, pointerEvents: "none",
           background: "radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.48) 100%)",
         }} />
 
-        {/* ── Film grain — tiled noise texture, gently animated, kept very
-               faint (0.028) so it reads as texture, not noise fighting the
-               text on top of it ── */}
+        {/* ── Film grain ── */}
         <div style={{
           position: "absolute", inset: "-10%", zIndex: 31, pointerEvents: "none",
           backgroundImage: `url(${typeof document !== "undefined" ? getGrainDataURL() : ""})`,
@@ -748,7 +962,8 @@ export default function OneLastThing({ visible }) {
           animation: REDUCED ? "none" : "oltGrainShift 0.6s steps(2) infinite",
         }} />
 
-        {/* ── Fade to black ── */}
+        {/* ── Fade to black (kept for completeness; no longer auto-triggered
+               once the showcase is reached, so the CTA stays reachable) ── */}
         <div style={{
           position: "absolute", inset: 0, background: "#000", zIndex: 50,
           pointerEvents: "none",

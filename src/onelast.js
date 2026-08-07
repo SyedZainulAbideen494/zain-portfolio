@@ -207,7 +207,6 @@ export default function OneLastThing({ visible }) {
   const [ty1,          setTy1]          = useState(false);
   const [ty2,          setTy2]          = useState(false);
   const [wordCount,    setWordCount]    = useState(0);
-  const [glitch,       setGlitch]       = useState(false);
   const [footerIn,     setFooterIn]     = useState(false);
   const [orbMain,      setOrbMain]      = useState(false);
   const [orbReveal,    setOrbReveal]    = useState(false);
@@ -222,7 +221,6 @@ export default function OneLastThing({ visible }) {
 
   /* ── Button magnetic / shine interaction state ── */
   const [btnHover,     setBtnHover]     = useState(false);
-  const [btnPress,     setBtnPress]     = useState(false);
   const [btnGlow,      setBtnGlow]      = useState({ x: 50, y: 50 });
   const [magnet,       setMagnet]       = useState({ x: 0, y: 0 }); // pull offset for the little orbiting motes
 
@@ -394,11 +392,10 @@ export default function OneLastThing({ visible }) {
     timers.current = [];
     if (!visible) {
       setScene(null); setTy1(false); setTy2(false); setWordCount(0);
-      setGlitch(false);
       setFooterIn(false); setOrbMain(false); setOrbReveal(false);
       setFadeOut(false); setScanline(false);
       setLabelIn(false); setHeadlineIn(false); setDescIn(false); setButtonIn(false);
-      setBtnHover(false); setBtnPress(false);
+      setBtnHover(false); 
       if (stopAmbienceRef.current) { stopAmbienceRef.current(); stopAmbienceRef.current = null; }
       return;
     }
@@ -908,8 +905,6 @@ export default function OneLastThing({ visible }) {
                   onMouseEnter={() => { setBtnHover(true); playHover(); }}
                   onMouseLeave={() => { setBtnHover(false); setBtnGlow({ x: 50, y: 50 }); setMagnet({ x: 0, y: 0 }); }}
                   onMouseMove={handleBtnMove}
-                  onMouseDown={() => setBtnPress(true)}
-                  onMouseUp={() => setBtnPress(false)}
                   onClick={() => playClick()}
                 >
                   <span className="olt-chess-btn-shine" />
@@ -932,7 +927,6 @@ export default function OneLastThing({ visible }) {
           {/* ── Footer ── */}
           <div style={{
             position: "absolute", bottom: "clamp(24px,4vw,48px)", left: "50%",
-            transform: "translateX(-50%)",
             maxWidth: "90vw", textAlign: "center",
             fontFamily: "'SF Mono','Fira Code',monospace",
             fontSize: "clamp(9px,2.4vw,11px)", fontWeight: 300,
